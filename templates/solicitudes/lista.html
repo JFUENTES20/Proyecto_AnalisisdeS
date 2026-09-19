@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes de Beca - Plataforma Nacional</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header h1 { font-size: 2rem; color: #2c3e50; margin-bottom: 5px; font-weight: 700; }
+        header p { color: #7f8c8d; font-size: 0.95rem; }
+        main { flex: 1; padding: 40px 0; }
+        .solicitudes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .solicitud-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-top: 4px solid #667eea;
+        }
+        .solicitud-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        .solicitud-card h3 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        .info-icon { margin-right: 8px; font-size: 1.1em; }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 16px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-badge.pendiente { background: #fff3cd; color: #856404; }
+        .status-badge.aprobada { background: #d4edda; color: #155724; }
+        .status-badge.activa { background: #cfe2ff; color: #084298; }
+        .status-badge.completada { background: #e8f5e9; color: #2e7d32; }
+        .status-badge.rechazada { background: #f8d7da; color: #721c24; }
+        .btn-detalles {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-detalles:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        .empty-state h2 { font-size: 1.5rem; margin-bottom: 10px; }
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📋 Plataforma Nacional de Becas</h1>
+            <p>Sistema de Gestión Integral de Solicitudes</p>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <div class="solicitudes-grid">
+                {% for solicitud in solicitudes %}
+                <div class="solicitud-card">
+                    <h3>{{ solicitud.nombre }}</h3>
+                    <div class="info-row">
+                        <span class="info-icon">📧</span>
+                        <span>{{ solicitud.email }}</span>
+                    </div>
+                    <span class="status-badge {{ solicitud.estado }}">{{ solicitud.get_estado_display }}</span>
+                    <div class="info-row" style="font-size: 0.9rem; color: #999;">
+                        <span class="info-icon">📅</span>
+                        <span>{{ solicitud.fecha_creacion|date:"d/m/Y" }}</span>
+                    </div>
+                    <a href="{% url 'solicitud_detalle' solicitud.id %}" class="btn-detalles">Ver detalles</a>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <h2>No hay solicitudes</h2>
+                    <p>Comienza a crear solicitudes de beca</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>© 2026 Plataforma Nacional de Becas | Universidad Mariano Gálvez</p>
+    </footer>
+</body>
+</html>
