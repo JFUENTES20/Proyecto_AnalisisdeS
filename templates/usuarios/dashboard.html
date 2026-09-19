@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Dashboard - Plataforma Nacional de Becas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 { color: #2c3e50; font-size: 1.8rem; }
+        header p { color: #7f8c8d; }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .btn-logout {
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        main { flex: 1; padding: 40px 0; }
+        .welcome-box {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-box h2 { color: #2c3e50; margin-bottom: 10px; }
+        h3 { color: white; margin-bottom: 20px; font-size: 1.3rem; }
+        .solicitudes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .solicitud-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #667eea;
+        }
+        .solicitud-card h4 { color: #2c3e50; margin-bottom: 12px; }
+        .info { color: #555; font-size: 0.95rem; margin: 8px 0; }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 12px;
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>📋 Plataforma Nacional de Becas</h1>
+                </div>
+                <div class="user-info">
+                    <div>Hola, {{ user.first_name }}!</div>
+                    <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <div class="welcome-box">
+                <h2>👋 Bienvenido, {{ user.get_full_name }}</h2>
+                <p>Cédula: {{ aspirante.cedula }} | Teléfono: {{ aspirante.telefono }}</p>
+            </div>
+            
+            <h3>Mis Solicitudes</h3>
+            <div class="solicitudes-grid">
+                {% for solicitud in solicitudes %}
+                <div class="solicitud-card">
+                    <h4>Solicitud #{{ solicitud.id }}</h4>
+                    <div class="info"><strong>Email:</strong> {{ solicitud.email }}</div>
+                    <span class="status-badge">{{ solicitud.get_estado_display }}</span>
+                </div>
+                {% empty %}
+                <div style="color: white; text-align: center; padding: 40px;">
+                    <p>No tienes solicitudes aún</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</body>
+</html>
