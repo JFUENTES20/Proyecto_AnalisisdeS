@@ -16,7 +16,7 @@ class Observer(ABC):
 
 
 class NotificadorEmail(Observer):
-    """Observador que simula envío de email"""
+    """Observador que hace un envío de email"""
     
     def actualizar(self, solicitud):
         print(f"📧 EMAIL: Se envió notificación a {solicitud.email}")

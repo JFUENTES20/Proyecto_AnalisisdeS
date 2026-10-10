@@ -85,36 +85,6 @@
             margin-bottom: 10px;
         }
         .section p strong { color: #2c3e50; }
-        .observer-box {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            padding: 24px;
-            margin: 30px 0;
-        }
-        .observer-box h4 {
-            color: #667eea;
-            margin-bottom: 16px;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        .observer-list {
-            list-style: none;
-            margin: 0;
-        }
-        .observer-list li {
-            padding: 8px 0;
-            color: #555;
-            display: flex;
-            align-items: center;
-        }
-        .observer-list li:before {
-            content: "✓";
-            color: #667eea;
-            font-weight: bold;
-            margin-right: 12px;
-            font-size: 1.2rem;
-        }
         .form-section {
             margin-top: 40px;
             padding-top: 30px;
@@ -201,16 +171,6 @@
                     </div>
                 </div>
                 
-                <div class="observer-box">
-                    <h4>🔔 Patrón Observer - Notificaciones Automáticas</h4>
-                    <p style="margin-bottom: 16px; color: #555;">Al cambiar el estado, se ejecutan automáticamente:</p>
-                    <ul class="observer-list">
-                        <li><strong>📧 Notificador Email</strong> - Envía confirmación al solicitante</li>
-                        <li><strong>💾 Notificador Sistema</strong> - Registra cambios en base de datos</li>
-                        <li><strong>👤 Notificador Admin</strong> - Alerta al administrador</li>
-                    </ul>
-                </div>
-                
                 <div class="form-section">
                     <h3>⚙️ Cambiar Estado</h3>
                     <form method="POST" action="{% url 'cambiar_estado' solicitud.id %}">
@@ -226,7 +186,7 @@
                                 <option value="rechazada">Rechazada</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn">Cambiar estado y notificar</button>
+                        <button type="submit" class="btn">Cambiar estado</button>
                     </form>
                 </div>
             </div>
