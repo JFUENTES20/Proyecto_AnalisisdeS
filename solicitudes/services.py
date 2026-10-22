@@ -173,7 +173,8 @@ class ExpedienteFacade:
     @transaction.atomic
     def editar(actor, solicitud_id, monto, motivacion):
         solicitud = (
-            Solicitud.objects.select_for_update()
+            # Convocatoria es nullable: bloquear solo la solicitud, no el LEFT JOIN.
+            Solicitud.objects.select_for_update(of=("self",))
             .select_related("convocatoria")
             .get(pk=solicitud_id)
         )

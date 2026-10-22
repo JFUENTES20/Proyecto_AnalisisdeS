@@ -79,3 +79,29 @@ No demuestra concurrencia en PostgreSQL, entrega push ni funcionamiento producti
 La moneda y periodicidad del umbral siguen pendientes. Se conserva esta base local
 antes de organizar las tareas de los cuatro integrantes; no se han asignado roles
 ni creado ramas de trabajo individuales en esta operación.
+
+## Corrección de PostgreSQL en CI · 22 de octubre de 2026
+
+Registro revisado: [Actions 39867869255, job pruebas](https://github.com/JFUENTES20/Proyecto_AnalisisdeS/actions/runs/39867869255/job/120134528535),
+commit 29bb81c. Las 33 pruebas terminaron con dos errores:
+`test_edicion_se_registra_sin_cambiar_estado` y `test_no_editar_despues_de_enviar`.
+Ambos muestran `NotSupportedError: FOR UPDATE cannot be applied to the nullable
+side of an outer join` al consultar en `ExpedienteFacade.editar`.
+
+Se reprodujeron los mismos dos errores antes del arreglo en PostgreSQL 16.9 de
+esta Mac. Se usó un clúster nuevo en una carpeta temporal, puerto 55439 y socket
+Unix exclusivo, sin conexiones TCP, con base becanet_regresion y base temporal
+test_becanet_regresion. No se usaron las bases existentes ni se cambiaron las
+variables privadas del servidor de demostración. Python local: 3.13.3; CI: 3.12.15.
+
+Corrección mínima: `select_for_update(of=("self",))` conserva el bloqueo de
+Solicitud y evita bloquear el lado nullable del LEFT OUTER JOIN de convocatoria.
+Se conservan select_related, transaction.atomic, permisos y validaciones.
+La prueba nueva verifica que una solicitud sin convocatoria recibe ValidationError,
+sin cambios de monto/estado ni evento de edición; no se filtran esos expedientes
+para evitar el JOIN. El workflow conserva PostgreSQL 16 sin modificaciones.
+
+Resultado local posterior: 34 pruebas aprobadas en PostgreSQL 16.9 y 34 en SQLite;
+check sin incidencias y makemigrations --check --dry-run sin cambios en PostgreSQL.
+No se afirma que Actions haya pasado: el arreglo aún no se ha subido ni ejecutado
+remotamente. Esta reproducción no sustituye pruebas de concurrencia entre sesiones.

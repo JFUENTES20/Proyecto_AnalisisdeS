@@ -376,6 +376,19 @@ class FlujoBecasTests(TestCase):
         self.assertEqual(s.estado, "borrador")
         self.assertTrue(s.eventos.filter(operacion="editar").exists())
 
+    def test_no_editar_solicitud_sin_convocatoria(self):
+        s = self.crear()
+        Solicitud.objects.filter(pk=s.pk).update(convocatoria=None)
+        with self.assertRaisesMessage(ValidationError, "La convocatoria está cerrada."):
+            ExpedienteFacade.editar(
+                self.aspirante, s.pk, Decimal("5000"), "Cambios de expediente legado."
+            )
+        s.refresh_from_db()
+        self.assertEqual(s.monto, Decimal("12000"))
+        self.assertEqual(s.estado, "borrador")
+        self.assertIsNone(s.convocatoria_id)
+        self.assertFalse(s.eventos.filter(operacion="editar").exists())
+
     def test_no_editar_despues_de_enviar(self):
         s = self.en_revision()
         with self.assertRaises(ValidationError):
