@@ -1,67 +1,132 @@
-"""
-Patrón Observer - Notificación de cambios de estado en solicitudes de beca
-"""
+"""State y Observer: reglas de transición y efectos persistentes, sin envío externo."""
 
-from abc import ABC, abstractmethod
-from datetime import datetime
-
-
-class Observer(ABC):
-    """Interfaz base para observadores"""
-    
-    @abstractmethod
-    def actualizar(self, solicitud):
-        """Método que se ejecuta cuando cambia el estado"""
-        pass
+from dataclasses import dataclass
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 
-class NotificadorEmail(Observer):
-    """Observador que simula envío de email"""
-    
-    def actualizar(self, solicitud):
-        print(f"📧 EMAIL: Se envió notificación a {solicitud.email}")
-        print(f"   Asunto: Su solicitud de beca fue {solicitud.estado}")
-        print(f"   Timestamp: {datetime.now()}\n")
+class EstadoSolicitud:
+    transiciones = {}
+
+    def siguiente(self, accion):
+        if accion not in self.transiciones:
+            raise ValidationError("Esta acción no está disponible en el estado actual.")
+        return self.transiciones[accion]
 
 
-class NotificadorSistema(Observer):
-    """Observador que registra en el sistema"""
-    
-    def actualizar(self, solicitud):
-        print(f"💾 SISTEMA: Cambio registrado en base de datos")
-        print(f"   Solicitud ID: {solicitud.id}")
-        print(f"   Nuevo estado: {solicitud.estado}")
-        print(f"   Timestamp: {datetime.now()}\n")
+class Borrador(EstadoSolicitud):
+    transiciones = {"enviar": "pendiente"}
 
 
-class NotificadorAdmin(Observer):
-    """Observador que notifica al administrador"""
-    
-    def actualizar(self, solicitud):
-        print(f"👤 ADMIN: Alerta para administrador")
-        print(f"   Solicitante: {solicitud.nombre}")
-        print(f"   Acción: {solicitud.estado}")
-        print(f"   Timestamp: {datetime.now()}\n")
+class Enviada(EstadoSolicitud):
+    transiciones = {"revisar": "revision"}
+
+
+class Revision(EstadoSolicitud):
+    transiciones = {
+        "corregir": "correcciones",
+        "aprobar": "aprobada",
+        "rechazar": "rechazada",
+    }
+
+
+class Correcciones(EstadoSolicitud):
+    transiciones = {"enviar": "pendiente"}
+
+
+class SegundaAprobacion(EstadoSolicitud):
+    transiciones = {"aprobar": "aprobada", "rechazar": "rechazada"}
+
+
+class Aprobada(EstadoSolicitud):
+    transiciones = {"activar": "activa"}
+
+
+class Activa(EstadoSolicitud):
+    transiciones = {"completar": "completada"}
+
+
+ESTADOS = {
+    "borrador": Borrador(),
+    "pendiente": Enviada(),
+    "revision": Revision(),
+    "correcciones": Correcciones(),
+    "segunda_aprobacion": SegundaAprobacion(),
+    "aprobada": Aprobada(),
+    "activa": Activa(),
+    "rechazada": EstadoSolicitud(),
+    "completada": EstadoSolicitud(),
+}
+
+
+@dataclass(frozen=True)
+class EventoSolicitud:
+    solicitud: object
+    actor: object
+    operacion: str
+    anterior: str
+    comentario: str = ""
+
+
+class AuditoriaObserver:
+    def actualizar(self, evento):
+        from .models import EventoAuditoria
+
+        EventoAuditoria.objects.create(
+            solicitud=evento.solicitud,
+            actor=evento.actor,
+            operacion=evento.operacion,
+            anterior=evento.anterior,
+            resultado=evento.solicitud.estado,
+            comentario=evento.comentario,
+        )
+
+
+class NotificacionObserver:
+    def actualizar(self, evento):
+        from .models import Notificacion
+
+        solicitud = evento.solicitud
+        if (
+            evento.operacion not in {"crear", "documento", "evaluar", "editar"}
+            and solicitud.aspirante_id
+        ):
+            Notificacion.objects.create(
+                destinatario=solicitud.aspirante,
+                solicitud=solicitud,
+                mensaje=f"Solicitud BEC-{solicitud.pk:05d}: {solicitud.get_estado_display()}.",
+            )
+        if evento.operacion in {"enviar", "aprobar"} and solicitud.estado in {
+            "pendiente",
+            "segunda_aprobacion",
+        }:
+            rol = "evaluador" if solicitud.estado == "pendiente" else "aprobador"
+            personas = get_user_model().objects.filter(is_active=True, perfil__rol=rol)
+            if rol == "evaluador":
+                personas = personas.filter(
+                    comites__convocatoria=solicitud.convocatoria
+                ).distinct()
+            personas = personas.exclude(pk=evento.actor.pk)
+            Notificacion.objects.bulk_create(
+                [
+                    Notificacion(
+                        destinatario=p,
+                        solicitud=solicitud,
+                        mensaje=f"Expediente BEC-{solicitud.pk:05d} pendiente de atención.",
+                    )
+                    for p in personas
+                ]
+            )
 
 
 class GestorObservadores:
-    """Gestor de observadores para las solicitudes"""
-    
-    def __init__(self):
-        self._observadores = []
-    
-    def agregar_observador(self, observador: Observer):
-        """Añade un observador a la lista"""
-        if observador not in self._observadores:
-            self._observadores.append(observador)
-            print(f"✅ Observador agregado: {observador.__class__.__name__}\n")
-    
-    def remover_observador(self, observador: Observer):
-        """Remueve un observador"""
-        if observador in self._observadores:
-            self._observadores.remove(observador)
-    
-    def notificar(self, solicitud):
-        """Notifica a todos los observadores"""
-        for observador in self._observadores:
-            observador.actualizar(solicitud)
+    def __init__(self, observadores=None):
+        self.observadores = (
+            tuple(observadores)
+            if observadores is not None
+            else (AuditoriaObserver(), NotificacionObserver())
+        )
+
+    def notificar(self, evento):
+        for observador in self.observadores:
+            observador.actualizar(evento)

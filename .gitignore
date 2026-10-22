@@ -4,3 +4,21 @@ __pycache__/
 db.sqlite3
 .DS_Store
 *.env
+
+.env
+.venv/
+media_privada/
+staticfiles/
+*.sqlite3
+.coverage
+
+.local/
+
+# Variantes privadas de entorno; se conserva solo la plantilla de ejemplo.
+.env.*
+!.env.example
+# Archivos auxiliares de las bases SQLite locales.
+*.sqlite
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
