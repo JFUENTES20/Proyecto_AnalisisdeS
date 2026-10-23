@@ -105,3 +105,11 @@ Resultado local posterior: 34 pruebas aprobadas en PostgreSQL 16.9 y 34 en SQLit
 check sin incidencias y makemigrations --check --dry-run sin cambios en PostgreSQL.
 No se afirma que Actions haya pasado: el arreglo aún no se ha subido ni ejecutado
 remotamente. Esta reproducción no sustituye pruebas de concurrencia entre sesiones.
+
+## Integración posterior con develop
+
+La validación de integration/guatebecas-develop amplía la suite a 39 pruebas en
+SQLite y PostgreSQL 16.9 y comprueba los tres escenarios de reconciliación en ambos
+motores, además de transferir una copia de la base actual a destinos nuevos.
+Véase [integracion.md](integracion.md) para evidencia, comandos y límites. Las
+bases y los worktrees anteriores no se actualizaron ni cambiaron de rama.

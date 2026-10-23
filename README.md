@@ -1,7 +1,7 @@
 # GuateBecas · Plataforma de gestión de becas
 
 Proyecto universitario de Análisis de Sistemas II, Universidad Mariano Gálvez.
-Esta rama reconstruye la base funcional conservando el historial de `main`, sus documentos y la migración inicial de solicitudes. No representa un sistema oficial del Gobierno.
+Esta rama integra el rediseño con `develop`, conservando ambos historiales, los documentos y las migraciones iniciales publicadas de usuarios y solicitudes. No representa un sistema oficial del Gobierno.
 
 ## Estado de esta entrega
 
@@ -17,12 +17,13 @@ Jose Fuentes · Pablo Maldonado · Flor Escobar · Elena Ovalle · Karen Canuc.
 
 ## Ejecutar en macOS (incluido Apple Silicon)
 
-Necesitas Python 3.13 y Git. Los comandos se ejecutan dentro de la carpeta del proyecto. Validado en esta Mac con Python 3.13.3, Django 5.2.18 y SQLite; 33 pruebas aprobadas.
+Necesitas Python 3.13 y Git. Los comandos se ejecutan dentro de la carpeta del proyecto. Validado en esta Mac con Python 3.13.3, Django 5.2.18 y SQLite; 39 pruebas aprobadas en SQLite y PostgreSQL 16.9.
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+export DEBUG=true
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
@@ -69,7 +70,7 @@ python manage.py makemigrations --check --dry-run
 python manage.py test
 ```
 
-GitHub Actions está configurado para ejecutar estas comprobaciones con PostgreSQL 16 cuando esta rama sea subida. Su ejecución remota aún no se ha verificado. SQLite no verifica el bloqueo de filas de PostgreSQL: antes del despliegue se deben probar solicitudes simultáneas contra PostgreSQL.
+GitHub Actions conserva PostgreSQL 16 y añade una matriz SQLite/PostgreSQL con comprobaciones de reconciliación. Esa nueva matriz aún no se ha ejecutado remotamente; el commit original 55b90dd sí pasó CI según confirmación del usuario. SQLite no verifica el bloqueo de filas de PostgreSQL: antes del despliegue se deben probar solicitudes simultáneas contra PostgreSQL.
 
 ## Organización
 
@@ -87,52 +88,43 @@ Ver `docs/rediseno/arquitectura.md`, `patrones.md`, `backlog.md` y `validacion.m
 
 ## Integración con el repositorio del grupo
 
-La rama de trabajo es `feature/rediseno-becanet`, basada en `main` (`ac52799`). Los commits anteriores no se reescriben. Hay cambios en `develop` que no están en `main`; revisar su registro de aspirantes antes de integrar, especialmente su migración de `usuarios`, que difiere de esta rama.
+Rama local: `integration/guatebecas-develop`, basada en `origin/develop` (`5670e2b`)
+e incorporando `origin/feature/rediseno-becanet` (`55b90dd`) mediante merge.
+Se conserva `usuarios.0001` (Aspirante); Perfil se añade en 0002 y se copia la
+relación histórica en 0003, sin fabricar cédulas ni modificar contraseñas o privilegios.
+Los expedientes sin propietario quedan para revisión manual, nunca se asignan por correo.
 
-El parche de entrega se aplica desde un clon limpio basado en ese `main`:
+**No aplicar esta rama directamente a una base del rediseño previo:** su 0001 de
+usuarios es distinta. La transferencia soportada va de una copia independiente a
+una base nueva y almacenamiento separado. No se utiliza --fake. Los cambios locales
+sin publicar de develop permanecen fuera de esta integración.
+
+Instrucciones, compatibilidad de rutas, herramientas de transferencia y resultados:
+[docs/rediseno/integracion.md](docs/rediseno/integracion.md).
 
 ```bash
-git fetch origin
-git switch -c feature/rediseno-becanet origin/main
-git apply --check /ruta/al/BecaNet-redesign.patch
-git apply /ruta/al/BecaNet-redesign.patch
+.venv/bin/python scripts/verificar_reconciliacion.py --engine sqlite
+# PostgreSQL necesita un servidor local de pruebas y usuario con CREATEDB:
+DB_HOST=/tmp/gb-integration-pg DB_PORT=55441 DB_USER=gb_test \
+  .venv/bin/python scripts/verificar_reconciliacion.py --engine postgresql
 ```
 
-Si el chequeo falla porque `main` avanzó, no forzar: revisar las diferencias. Si hay modificaciones locales, conservarlas antes de cambiar de rama. Ejecutar las pruebas y revisar `git diff`. Luego crear commits descriptivos de los cambios reales y subir la rama para un pull request revisado por otro integrante.
-
-No borrar bases existentes. Las migraciones preservan solicitudes antiguas de `main` como expedientes sin propietario/convocatoria; su vinculación exige una revisión manual de identidad. Una base ya migrada con el esquema distinto de `develop` necesita un plan de reconciliación antes de aplicar esta rama.
+Ambos comandos crean destinos desechables. El PR propuesto es desde esta rama a
+`develop`; todavía no se ha abierto ni se ha publicado la rama de integración.
 
 ## Antes de publicar
 
 Configurar `DEBUG=false`, `SECRET_KEY` aleatoria, `ALLOWED_HOSTS` exactos y PostgreSQL; preparar servidor WSGI, archivos estáticos, HTTPS y copias de seguridad; verificar correo y procesos de registro; limitar intentos de acceso y cargas; añadir análisis antimalware; usar almacenamiento privado y acceso autenticado. No se incluye aún una configuración de despliegue lista para AWS. El bloqueo pesimista y las restricciones de base de datos deben verificarse en PostgreSQL antes de uso compartido.
 
-## Demostración local en esta Mac
+## Worktrees y demostración existente en esta Mac
 
-Worktree: `../GuateBecas`, rama `feature/rediseno-becanet`, base `ac52799`.
-No se modificaron las bases ni los archivos pendientes de `develop`.
+- `../Proyecto_AnalisisdeS`: develop con cambios locales conservados.
+- `../GuateBecas`: rediseño y servidor de demostración existente, intactos.
+- `../GuateBecas-integracion`: integración y entorno virtual independientes;
+  no se inicia otro servidor ni se copian configuraciones privadas aquí.
 
-La instalación local ya tiene `.venv`, una SQLite nueva `db.sqlite3` y datos ficticios.
-La configuración y contraseña generadas están en `.local/demo.env` (permisos 600,
-excluido de Git). `iniciar-local.sh` carga ese archivo explícitamente; no depende
-del valor de DEBUG heredado de la terminal. No compartir ni versionar ese archivo.
-
-```bash
-cd ../GuateBecas
-./iniciar-local.sh
-# http://127.0.0.1:8000/ ; acceso por usuario en /acceso/
-# Ver la contraseña local de las cuentas ficticias:
-sed -n 's/^export DEMO_PASSWORD=//p' .local/demo.env
-```
-
-Roles: `aspirante.demo`, `evaluador.demo`, `aprobador.uno`, `aprobador.dos` y
-`administrador.demo` (también puede entrar en `/admin/`). Usan la misma contraseña
-local de demostración. El administrador es solo para esta base ficticia.
-
-Para repetir comprobaciones: `./iniciar-local.sh check`,
-`./iniciar-local.sh makemigrations --check --dry-run`, `./iniciar-local.sh test`.
-Para ver migraciones sin aplicar: `./iniciar-local.sh migrate --check`.
-
-Identidad provisional GuateBecas: azul/blanco, texto azul oscuro y acento jade.
-`static/img/volcanes-guatemala.svg` es una ilustración vectorial original creada
-para el proyecto; no incorpora imágenes de terceros ni emblemas oficiales.
-Las capturas previas de `docs/rediseno/vistas/` corresponden al diseño anterior.
+La configuración, contraseña, SQLite y archivos de demostración siguen excluidos
+de Git. No se modificó el servidor activo ni se cambió su base a la integración.
+Las capturas previas son antecedentes del rediseño, conservados para el equipo.
+La ilustración SVG de volcanes es original del proyecto y se mantiene la identidad
+GuateBecas azul/blanco/jade y el aviso de demostración universitaria.

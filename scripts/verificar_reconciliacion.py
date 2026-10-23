@@ -222,6 +222,15 @@ assert u.perfil.rol=="aspirante" and not u.is_staff and not u.is_superuser and n
             # Repeating import cannot overwrite a populated destination.
             assert "destino debe estar vacío" in run(target,*transfer,source=source,media=target_media,ok=False)
             shell(target,REDESIGN_CHECK,media=target_media)
+            # Imported explicit PKs must not collide with subsequent inserts.
+            shell(target, """from django.contrib.auth.models import User
+from django.db import transaction
+ultimo=max(User.objects.values_list("pk",flat=True))
+with transaction.atomic():
+    nuevo=User.objects.create(username="prueba_secuencia_sin_persistir")
+    assert nuevo.pk>ultimo
+    transaction.set_rollback(True)
+""", media=target_media)
             shell(source,REDESIGN_CHECK.replace('assert not Aspirante.objects.exists()', 'assert "usuarios_aspirante" not in __import__("django.db",fromlist=["connection"]).connection.introspection.table_names()'),schema="redesign",media=source_media)
             print(args.engine+": transferencia rediseño, archivos, permisos, relaciones y rechazos preventivos OK",flush=True)
         finally:

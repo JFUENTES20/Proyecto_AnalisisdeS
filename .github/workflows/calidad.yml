@@ -1,8 +1,12 @@
-name: Calidad BecaNet
+name: Calidad GuateBecas
 on: [push, pull_request]
 jobs:
   pruebas:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [sqlite, postgresql]
     services:
       postgres:
         image: postgres:16
@@ -17,7 +21,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      DB_ENGINE: postgresql
+      DB_ENGINE: ${{ matrix.engine }}
       DB_NAME: becanet
       DB_USER: becanet
       DB_PASSWORD: solo-ci
@@ -33,3 +37,4 @@ jobs:
       - run: python manage.py check
       - run: python manage.py makemigrations --check --dry-run
       - run: python manage.py test --verbosity 2
+      - run: python scripts/verificar_reconciliacion.py --engine "${{ matrix.engine }}"
