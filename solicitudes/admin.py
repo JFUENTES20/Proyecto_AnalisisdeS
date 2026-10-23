@@ -1,23 +1,29 @@
 from django.contrib import admin
-from .models import Solicitud
+from .models import Solicitud, Decision, EventoAuditoria, Notificacion, Documento
+
+
+class SoloLecturaAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Solicitud)
-class SolicitudAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre', 'email', 'estado', 'fecha_creacion')
-    list_filter = ('estado', 'fecha_creacion')
-    search_fields = ('nombre', 'email')
-    readonly_fields = ('fecha_creacion', 'fecha_actualizacion')
-    
-    fieldsets = (
-        ('Información Personal', {
-            'fields': ('nombre', 'email')
-        }),
-        ('Estado', {
-            'fields': ('estado',)
-        }),
-        ('Fechas', {
-            'fields': ('fecha_creacion', 'fecha_actualizacion'),
-            'classes': ('collapse',)
-        }),
-    )
+class SolicitudAdmin(SoloLecturaAdmin):
+    list_display = ("id", "nombre", "convocatoria", "monto", "estado")
+    list_filter = ("estado",)
+    search_fields = ("nombre", "email")
+
+
+@admin.register(EventoAuditoria)
+class EventoAdmin(SoloLecturaAdmin):
+    list_display = ("solicitud", "actor", "operacion", "resultado", "creado_en")
+    list_filter = ("operacion",)
+
+
+admin.site.register([Decision, Notificacion, Documento], SoloLecturaAdmin)

@@ -1,0 +1,145 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.6 Chrome/140.0.7339.249 Electron/38.8.0 Safari/537.36" version="29.3.6">
+  <diagram name="Modelo Relacional - BecaNet (SQL Server)" id="modelo-relacional-becanet">
+    <mxGraphModel dx="1303" dy="1933" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1650" pageHeight="1150" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=18;fontStyle=1;align=left;labelBackgroundColor=none;fontColor=#143642;" value="Diseño de Base de Datos — Modelo Relacional — BecaNet (SQL Server)" vertex="1">
+          <mxGeometry height="30" width="1000" x="80" y="-40" as="geometry" />
+        </mxCell>
+        <mxCell id="usuario_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;labelBackgroundColor=none;fontColor=#143642;" value="&lt;b&gt;USUARIO&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="300" x="700" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="usuario_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;labelBackgroundColor=none;fontColor=#143642;" value="&lt;b&gt;PK&lt;/b&gt;  Id: INT IDENTITY&lt;br&gt;     Nombre: VARCHAR(150) NOT NULL&lt;br&gt;     Correo: VARCHAR(150) UNIQUE, NOT NULL&lt;br&gt;     Contrasena: VARCHAR(255) NOT NULL&lt;br&gt;     Telefono: VARCHAR(20)&lt;br&gt;     FechaRegistro: DATETIME DEFAULT GETDATE()&lt;br&gt;     TipoUsuario: VARCHAR(20) CHECK" vertex="1">
+          <mxGeometry height="170" width="300" x="700" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="estudiante_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;ESTUDIANTE&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="280" x="260" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="estudiante_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;PK,FK&lt;/b&gt;  IdUsuario: INT -&amp;gt; USUARIO.Id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NivelAcademico: VARCHAR(50) NOT NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;InstitucionProcedencia: VARCHAR(150)" vertex="1">
+          <mxGeometry height="82" width="280" x="260" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="coordinador_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;COORDINADORBECAS&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="280" x="700" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="coordinador_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;PK,FK&lt;/b&gt;  IdUsuario: INT -&amp;gt; USUARIO.Id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Cargo: VARCHAR(100)" vertex="1">
+          <mxGeometry height="60" width="280" x="700" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="evaluador_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;EVALUADORCOMITE&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="280" x="1140" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="evaluador_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;PK,FK&lt;/b&gt;  IdUsuario: INT -&amp;gt; USUARIO.Id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Especialidad: VARCHAR(100)" vertex="1">
+          <mxGeometry height="60" width="280" x="1140" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="comite_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;COMITEEVALUADOR&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="280" x="1330" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="comite_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;PK&lt;/b&gt;  Id: INT IDENTITY&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Nombre: VARCHAR(150) NOT NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FechaCreacion: DATETIME DEFAULT GETDATE()" vertex="1">
+          <mxGeometry height="82" width="280" x="1330" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="solicitud_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;SOLICITUD&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="300" x="260" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="solicitud_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;PK&lt;/b&gt;  Id: INT IDENTITY&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FechaCreacion: DATETIME DEFAULT GETDATE()&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Estado: VARCHAR(20) CHECK, DEFAULT &#39;EN_PROCESO&#39;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Observaciones: VARCHAR(MAX)&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;  IdEstudiante: INT -&amp;gt; ESTUDIANTE.IdUsuario&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;  IdConvocatoria: INT -&amp;gt; CONVOCATORIA.Id&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;  IdComite: INT -&amp;gt; COMITEEVALUADOR.Id (NULL)" vertex="1">
+          <mxGeometry height="170" width="300" x="260" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="comitemiembro_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;COMITEMIEMBRO&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="280" x="1140" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="comitemiembro_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;PK,FK&lt;/b&gt;  IdComite: INT -&amp;gt; COMITEEVALUADOR.Id&lt;br&gt;&lt;b&gt;PK,FK&lt;/b&gt;  IdEvaluador: INT -&amp;gt; EVALUADORCOMITE.IdUsuario" vertex="1">
+          <mxGeometry height="60" width="280" x="1140" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="documento_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;DOCUMENTO&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="300" x="260" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="documento_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;PK&lt;/b&gt;  Id: INT IDENTITY&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;NombreArchivo: VARCHAR(255) NOT NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;TipoArchivo: VARCHAR(10) CHECK (PDF/JPG/PNG)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;UrlArchivo: VARCHAR(500) NOT NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FechaCarga: DATETIME DEFAULT GETDATE()&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;  IdSolicitud: INT -&amp;gt; SOLICITUD.Id" vertex="1">
+          <mxGeometry height="148" width="300" x="260" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="evaluacion_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;EVALUACION&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="300" x="700" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="evaluacion_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;PK&lt;/b&gt;  Id: INT IDENTITY&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Puntaje: DECIMAL(5,2) CHECK 0-100&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Observaciones: VARCHAR(MAX)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FechaEvaluacion: DATETIME DEFAULT GETDATE()&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;  IdSolicitud: INT -&amp;gt; SOLICITUD.Id&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;  IdEvaluador: INT -&amp;gt; EVALUADORCOMITE.IdUsuario" vertex="1">
+          <mxGeometry height="148" width="300" x="720" y="908" as="geometry" />
+        </mxCell>
+        <mxCell id="reporte_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;REPORTE&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="300" x="1140" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="reporte_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;labelBackgroundColor=none;fontColor=#143642;" value="&lt;b&gt;PK&lt;/b&gt;  Id: INT IDENTITY&lt;br&gt;     TipoReporte: VARCHAR(50) NOT NULL&lt;br&gt;     FechaGeneracion: DATETIME DEFAULT GETDATE()&lt;br&gt;     Parametros: VARCHAR(MAX)&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;  IdCoordinador: INT -&gt; COORDINADORBECAS.IdUsuario" vertex="1">
+          <mxGeometry height="126" width="300" x="1140" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="rel1" edge="1" parent="1" source="estudiante_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="usuario_attrs" value="1        hereda de        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel2" edge="1" parent="1" source="coordinador_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="usuario_attrs" value="1        hereda de        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel3" edge="1" parent="1" source="evaluador_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="usuario_attrs" value="1        hereda de        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel4" edge="1" parent="1" source="convocatoria_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="coordinador_attrs" value="*        pertenece a        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel5" edge="1" parent="1" source="solicitud_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="estudiante_attrs" value="*        pertenece a        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel6" edge="1" parent="1" source="solicitud_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="convocatoria_attrs" value="*        pertenece a        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel7" edge="1" parent="1" source="convocatoria_hdr" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="comite_attrs" value="*        asignada a        0..1">
+          <mxGeometry relative="1" x="0.1792" y="23" as="geometry">
+            <mxPoint x="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel8" edge="1" parent="1" source="documento_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="solicitud_attrs" value="*        pertenece a        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel9" edge="1" parent="1" source="comitemiembro_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="comite_attrs" value="*        pertenece a        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel10" edge="1" parent="1" source="comitemiembro_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="evaluador_attrs" value="*        pertenece a        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel11" edge="1" parent="1" source="evaluacion_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="solicitud_attrs" value="*        pertenece a        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel12" edge="1" parent="1" source="convocatoria_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="evaluador_attrs" value="*        realizada por        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel13" edge="1" parent="1" source="reporte_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="coordinador_attrs" value="*        generado por        1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legendTitle" parent="1" style="text;html=1;fontStyle=1;fontSize=12;align=left;labelBackgroundColor=none;fontColor=#FFFFFF;" value="Leyenda" vertex="1">
+          <mxGeometry height="20" width="120" x="80" y="950" as="geometry" />
+        </mxCell>
+        <mxCell id="legend1" parent="1" style="text;html=1;fontSize=11;align=left;labelBackgroundColor=default;fontColor=light-dark(#143642, #ffffff);whiteSpace=wrap;" value="PK = Llave Primaria   |   FK = Llave Foránea   |   PK,FK = Llave Primaria compuesta que también es foránea" vertex="1">
+          <mxGeometry height="20" width="900" x="80" y="972" as="geometry" />
+        </mxCell>
+        <mxCell id="legend2" parent="1" style="text;html=1;fontSize=11;align=left;labelBackgroundColor=none;fontColor=light-dark(#143642, #ffffff);textShadow=1;" value="Notación Pata de Gato (Crow&#39;s Foot): 1 = un solo registro relacionado, * = muchos registros relacionados" vertex="1">
+          <mxGeometry height="20" width="900" x="80" y="992" as="geometry" />
+        </mxCell>
+        <mxCell id="legend3" parent="1" style="text;html=1;fontSize=11;align=left;fontStyle=1;labelBackgroundColor=none;fontColor=light-dark(#143642, #ffffff);whiteSpace=wrap;" value="Motor de Base de Datos seleccionado: Microsoft SQL Server (edición Express, gratuita)" vertex="1">
+          <mxGeometry height="20" width="700" x="80" y="1012" as="geometry" />
+        </mxCell>
+        <mxCell id="FVaD5cARGsjfkNpTYJUU-1" edge="1" parent="1" source="evaluacion_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="convocatoria_attrs" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="913" y="770" as="sourcePoint" />
+            <mxPoint x="1254" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="convocatoria_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=left;verticalAlign=top;fontSize=10;spacingLeft=6;spacingTop=4;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;PK&lt;/b&gt;  Id: INT IDENTITY&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Titulo: VARCHAR(200) NOT NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Descripcion: VARCHAR(MAX)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Requisitos: VARCHAR(MAX)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FechaApertura: DATE NOT NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;FechaCierre: DATE NOT NULL&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Estado: VARCHAR(20) CHECK, DEFAULT &#39;BORRADOR&#39;&lt;br&gt;&lt;i&gt;FK&lt;/i&gt;  IdCoordinador: INT -&amp;gt; COORDINADORBECAS.IdUsuario" vertex="1">
+          <mxGeometry height="192" width="300" x="710" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="FVaD5cARGsjfkNpTYJUU-2" edge="1" parent="1" source="solicitud_attrs" style="endArrow=none;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;html=1;strokeColor=#A8201A;rounded=0;fontSize=10;fontColor=default;labelBackgroundColor=none;" target="convocatoria_hdr" value="">
+          <mxGeometry relative="1" x="0.1792" y="23" as="geometry">
+            <mxPoint x="-1" as="offset" />
+            <mxPoint x="560" y="576" as="sourcePoint" />
+            <mxPoint x="1330" y="529" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="convocatoria_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAE5C7;strokeColor=#0F8B8D;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#143642;labelBackgroundColor=none;" value="&lt;b&gt;CONVOCATORIA&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="300" x="710" y="560" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
