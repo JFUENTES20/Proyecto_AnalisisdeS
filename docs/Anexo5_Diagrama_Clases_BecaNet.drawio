@@ -1,0 +1,139 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.6 Chrome/140.0.7339.249 Electron/38.8.0 Safari/537.36" version="29.3.6">
+  <diagram name="Diagrama de Clases - Modelo de Dominio - BecaNet" id="clases-dominio-becanet">
+    <mxGraphModel dx="2605" dy="1565" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1150" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="usuario_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=middle;fontSize=12;fontStyle=2;fontColor=#000000;" value="«abstract»&lt;br&gt;&lt;b&gt;Usuario&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="260" x="700" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="usuario_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- id: int&lt;br&gt;- nombre: String&lt;br&gt;- correo: String&lt;br&gt;- contrasena: String&lt;br&gt;- telefono: String&lt;br&gt;- fechaRegistro: Date" vertex="1">
+          <mxGeometry height="148" width="260" x="700" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="estudiante_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="&lt;b&gt;Estudiante&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="240" x="260" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="estudiante_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- nivelAcademico: String&lt;br&gt;- institucionProcedencia: String" vertex="1">
+          <mxGeometry height="60" width="240" x="260" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="coordinador_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="&lt;b&gt;CoordinadorBecas&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="240" x="700" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="coordinador_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- cargo: String" vertex="1">
+          <mxGeometry height="38" width="240" x="700" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="evaluador_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="&lt;b&gt;EvaluadorComite&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="240" x="1140" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="evaluador_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- especialidad: String" vertex="1">
+          <mxGeometry height="38" width="240" x="1140" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="solicitud_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="&lt;b&gt;Solicitud&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="260" x="260" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="solicitud_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- id: int&lt;br&gt;- fechaCreacion: Date&lt;br&gt;- estado: EstadoSolicitud&lt;br&gt;- observaciones: String" vertex="1">
+          <mxGeometry height="104" width="260" x="260" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="convocatoria_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="&lt;b&gt;Convocatoria&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="280" x="700" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="convocatoria_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- id: int&lt;br&gt;- titulo: String&lt;br&gt;- descripcion: String&lt;br&gt;- requisitos: String&lt;br&gt;- fechaApertura: Date&lt;br&gt;- fechaCierre: Date&lt;br&gt;- estado: EstadoConvocatoria" vertex="1">
+          <mxGeometry height="170" width="280" x="700" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="comite_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="&lt;b&gt;ComiteEvaluador&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="260" x="1140" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="comite_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- id: int&lt;br&gt;- nombre: String&lt;br&gt;- fechaCreacion: Date" vertex="1">
+          <mxGeometry height="82" width="260" x="1140" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="documento_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="&lt;b&gt;Documento&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="260" x="260" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="documento_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- id: int&lt;br&gt;- nombreArchivo: String&lt;br&gt;- tipoArchivo: String&lt;br&gt;- urlArchivo: String&lt;br&gt;- fechaCarga: Date" vertex="1">
+          <mxGeometry height="126" width="260" x="260" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="evaluacion_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="&lt;b&gt;Evaluacion&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="260" x="1140" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="evaluacion_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- id: int&lt;br&gt;- puntaje: Decimal&lt;br&gt;- observaciones: String&lt;br&gt;- fechaEvaluacion: Date" vertex="1">
+          <mxGeometry height="104" width="260" x="1140" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="reporte_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="&lt;b&gt;Reporte&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="260" x="700" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="reporte_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="- id: int&lt;br&gt;- tipoReporte: String&lt;br&gt;- fechaGeneracion: Date&lt;br&gt;- parametros: String" vertex="1">
+          <mxGeometry height="104" width="260" x="700" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="estadoSolicitud_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="«enumeration»&lt;br&gt;&lt;b&gt;EstadoSolicitud&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="220" x="40" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="estadoSolicitud_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="EN_PROCESO&lt;br&gt;EVALUADA&lt;br&gt;APROBADA&lt;br&gt;RECHAZADA&lt;br&gt;CANCELADA" vertex="1">
+          <mxGeometry height="126" width="220" x="40" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="estadoConvocatoria_hdr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#000000;" value="«enumeration»&lt;br&gt;&lt;b&gt;EstadoConvocatoria&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="220" x="340" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="estadoConvocatoria_attrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;align=left;verticalAlign=top;fontSize=11;spacingLeft=6;spacingTop=4;fontColor=#000000;" value="BORRADOR&lt;br&gt;ABIERTA&lt;br&gt;CERRADA" vertex="1">
+          <mxGeometry height="82" width="220" x="340" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="estudiante_hdr" style="endArrow=block;endFill=0;endSize=16;html=1;strokeColor=#000000;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" target="usuario_hdr">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="coordinador_hdr" style="endArrow=block;endFill=0;endSize=16;html=1;strokeColor=#000000;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" target="usuario_hdr">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="evaluador_hdr" style="endArrow=block;endFill=0;endSize=16;html=1;strokeColor=#000000;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" target="usuario_hdr">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="coordinador_attrs" style="endArrow=none;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="convocatoria_attrs" value="1        crea        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge5" edge="1" parent="1" source="convocatoria_attrs" style="endArrow=none;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="solicitud_attrs" value="1        recibe        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge6" edge="1" parent="1" source="estudiante_attrs" style="endArrow=none;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="solicitud_attrs" value="1        envía        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge7" edge="1" parent="1" source="solicitud_attrs" style="startArrow=diamondThin;startFill=1;endArrow=none;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="documento_attrs" value="1        contiene        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge8" edge="1" parent="1" source="comite_attrs" style="startArrow=diamondThin;startFill=0;endArrow=none;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="evaluador_attrs" value="*   integrado por   *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge9" edge="1" parent="1" source="comite_attrs" style="endArrow=none;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="solicitud_attrs" value="1        evalúa        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge10" edge="1" parent="1" source="solicitud_attrs" style="endArrow=none;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="evaluacion_attrs" value="1        tiene        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge11" edge="1" parent="1" source="evaluador_attrs" style="endArrow=none;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="evaluacion_attrs" value="1        realiza        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge12" edge="1" parent="1" source="coordinador_attrs" style="endArrow=none;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="reporte_attrs" value="1        genera        *">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge13" edge="1" parent="1" source="solicitud_attrs" style="endArrow=open;dashed=1;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="estadoSolicitud_attrs" value="usa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge14" edge="1" parent="1" source="convocatoria_attrs" style="endArrow=open;dashed=1;html=1;strokeColor=#000000;rounded=0;fontColor=#000000;" target="estadoConvocatoria_attrs" value="usa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legendTitle" parent="1" style="text;html=1;fontStyle=1;fontSize=12;align=left;fontColor=#FFFFFF;" value="Leyenda" vertex="1">
+          <mxGeometry height="20" width="120" x="700" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="legend1" parent="1" style="text;html=1;fontSize=11;align=left;fontColor=#FFFFFF;" value="Triángulo hueco = herencia (generalización)" vertex="1">
+          <mxGeometry height="20" width="360" x="700" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="legend2" parent="1" style="text;html=1;fontSize=11;align=left;fontColor=#FFFFFF;" value="Rombo relleno = composición (Solicitud posee sus Documentos)" vertex="1">
+          <mxGeometry height="20" width="460" x="700" y="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="legend3" parent="1" style="text;html=1;fontSize=11;align=left;fontColor=#FFFFFF;" value="Rombo vacío = agregación (Comité formado por Evaluadores)" vertex="1">
+          <mxGeometry height="20" width="460" x="700" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="legend4" parent="1" style="text;html=1;fontSize=11;align=left;fontColor=#FFFFFF;" value="Línea continua = asociación   |   Línea punteada = dependencia (usa)" vertex="1">
+          <mxGeometry height="20" width="500" x="700" y="1100" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
