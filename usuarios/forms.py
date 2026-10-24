@@ -41,3 +41,11 @@ class ContactoForm(forms.Form):
     def clean_telefono(self):
         from .contacto import normalizar_telefono
         return normalizar_telefono(self.cleaned_data["telefono"])
+
+
+class FotografiaForm(forms.Form):
+    fotografia = forms.FileField(
+        label="Seleccionar fotografía", allow_empty_file=False,
+        widget=forms.ClearableFileInput(attrs={"accept": "image/jpeg,image/png", "data-foto-input": ""}),
+        help_text="JPG o PNG, máximo 2 MB",
+    )

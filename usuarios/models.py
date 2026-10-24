@@ -15,6 +15,7 @@ class Perfil(models.Model):
     )
     rol = models.CharField(max_length=20, choices=Rol.choices, default=Rol.ASPIRANTE)
     telefono = models.CharField(max_length=20, blank=True)
+    fotografia = models.FileField(upload_to="perfiles/", blank=True)
     centro_educativo = models.CharField(max_length=160, blank=True)
 
     def __str__(self):
@@ -50,3 +51,11 @@ class EventoContacto(models.Model):
 
     class Meta:
         ordering = ["-fecha", "-pk"]
+
+
+class EventoFotografia(models.Model):
+    perfil = models.ForeignKey(Perfil, on_delete=models.PROTECT)
+    responsable = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    operacion = models.CharField(max_length=20)
+    resultado = models.CharField(max_length=20, default="actualizado")
+    fecha = models.DateTimeField(auto_now_add=True)

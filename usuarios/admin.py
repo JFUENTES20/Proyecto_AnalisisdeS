@@ -6,7 +6,7 @@ from .models import Aspirante, Perfil, EventoContacto
 class PerfilAdmin(admin.ModelAdmin):
     list_display = ("usuario", "rol", "centro_educativo")
     list_filter = ("rol",)
-    readonly_fields = ("telefono",)
+    readonly_fields = ("telefono", "fotografia")
     search_fields = ("usuario__username", "usuario__email")
 
 
