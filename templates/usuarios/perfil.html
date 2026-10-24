@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Mi perfil · GuateBecas{% endblock %}
+{% block content %}
+<section class="formulario-centrado">
+    <p class="eyebrow">MI INFORMACIÓN DE CONTACTO</p>
+    <h1>Mi perfil</h1>
+    <p>Aquí puedes consultar y actualizar tu teléfono de contacto.</p>
+    <article class="tarjeta">
+        <h2>Teléfono vigente</h2>
+        <p>{{ telefono_actual|default:"Aún no has registrado un teléfono." }}</p>
+        {% if telefono_historico %}<p class="nota">Teléfono histórico conservado: {{ telefono_historico }}. Este dato se mantiene como archivo.</p>{% endif %}
+        {% if discrepancia %}<p role="note">El contacto vigente y el dato histórico difieren. Revisa ambos y confirma el teléfono antes de guardar. El histórico no se reemplazará.</p>{% endif %}
+    </article>
+    <form method="post" class="tarjeta formulario perfil-contacto">{% csrf_token %}
+        {{ form.as_p }}
+        <button class="boton" type="submit">Guardar teléfono</button>
+    </form>
+    <a class="volver" href="{% url 'panel' %}">← Volver a mi panel</a>
+</section>
+{% endblock %}
