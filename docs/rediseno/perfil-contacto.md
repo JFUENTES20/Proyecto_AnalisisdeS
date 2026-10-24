@@ -140,3 +140,11 @@ La corrección se guarda en un nuevo commit posterior a b70cd40, sin reescribirl
 No se aplicaron cambios a bases, archivos cargados ni datos históricos y no se
 reiniciaron los servidores de desarrollo existentes. Al usar --noreload, los
 procesos activos cargarán la corrección de Python en su próximo reinicio.
+
+
+### Validación manual posterior a la corrección
+
+El usuario confirmó desde su teléfono, después del reinicio de la vista previa
+independiente del puerto 8003, que el formulario aceptó un teléfono con prefijo
+nacional 8, rechazó uno con prefijo 9 y conservó el valor válido al recargar.
+No se incluye el número utilizado ni otros datos personales de la cuenta.
