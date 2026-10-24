@@ -32,10 +32,13 @@ Los campos adicionales en POST se rechazan con 403, incluso intentos de enviar
 correo, cédula, roles, contraseñas o identificadores ajenos. Otros roles reciben
 403; sin sesión se exige acceso. El formulario mantiene POST con CSRF.
 
-Se aceptan ocho dígitos nacionales que comienzan entre 2 y 7, espacios normales
+Se aceptan ocho dígitos nacionales que comienzan entre 2 y 8, espacios normales
 o inseparables y prefijo opcional `+502`. Se guarda `+502` seguido de ocho dígitos.
 Referencia: [Plan Nacional de Numeración de SIT](https://www.sit.gob.gt/plan-nacional-de-numeracion.html).
-La validación es de formato, no verifica titularidad, existencia o recepción de mensajes.
+La [resolución SIT-DSI-226-2022](https://www.sit.gob.gt/files/SIT-DSI-226-2022.pdf)
+habilita el bloque 80000000–89999999 para telefonía móvil y fundamenta la admisión
+del prefijo nacional 8. La validación es de formato: no comprueba asignación,
+titularidad, existencia ni recepción de mensajes.
 El teléfono es obligatorio al guardar; no se cambia el registro de cuentas.
 
 ## Una fuente vigente y conservación histórica
@@ -116,3 +119,24 @@ a otros navegadores y dispositivos. No se
 realizó una prueba de carga con escrituras simultáneas; se comprobó el rechazo de
 formularios obsoletos y el rollback de auditoría. SQLite no ofrece bloqueo de fila
 como PostgreSQL, por lo que la vista previa local no acredita concurrencia productiva.
+
+
+## Corrección del prefijo móvil 8
+
+Se revisó visualmente la página 2 de la resolución oficial SIT-DSI-226-2022:
+retira de reserva el indicativo 8 y habilita el bloque 80000000–89999999 para
+telefonía móvil. La expresión básica y su mensaje admiten ahora inicios 2–8;
+se mantienen espacios, prefijo opcional +502 y normalización internacional.
+Esto valida únicamente formato, sin consultar asignación o titularidad.
+
+Resultado: 56 pruebas aprobadas en SQLite y 56 en PostgreSQL 16.9, usando
+exclusivamente bases de prueba independientes. Se añadieron casos del bloque 8
+con y sin +502, espacios y ambos límites del bloque. Se mantienen longitudes
+incorrectas y prefijos rechazados; se comprueba además que, tras un error y una
+recarga, permanece el teléfono anterior y no se genera un evento de cambio.
+La comprobación de Django no reportó problemas. No requiere nuevas migraciones.
+
+La corrección se guarda en un nuevo commit posterior a b70cd40, sin reescribirlo.
+No se aplicaron cambios a bases, archivos cargados ni datos históricos y no se
+reiniciaron los servidores de desarrollo existentes. Al usar --noreload, los
+procesos activos cargarán la corrección de Python en su próximo reinicio.

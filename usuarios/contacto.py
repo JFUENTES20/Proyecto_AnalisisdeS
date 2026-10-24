@@ -11,9 +11,9 @@ SALT = "guatebecas.perfil-contacto"
 
 def normalizar_telefono(valor):
     compacto = valor.strip().replace(" ", "").replace("\u00a0", "")
-    match = re.fullmatch(r"(?:\+502)?([2-7][0-9]{7})", compacto)
+    match = re.fullmatch(r"(?:\+502)?([2-8][0-9]{7})", compacto)
     if not match:
-        raise ValidationError("Ingresa un teléfono guatemalteco de 8 dígitos que comience entre 2 y 7; puedes usar espacios o +502.")
+        raise ValidationError("Ingresa un teléfono guatemalteco de 8 dígitos que comience entre 2 y 8; puedes usar espacios o +502.")
     return "+502" + match.group(1)
 
 

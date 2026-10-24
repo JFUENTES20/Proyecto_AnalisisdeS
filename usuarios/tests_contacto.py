@@ -20,9 +20,28 @@ class ContactoTests(TestCase):
     def test_normalizacion_y_numeros_invalidos(self):
         for valor in ("51234567", " 5123 4567 ", "+502 5123 4567", "+502\u00a051234567"):
             self.assertEqual(normalizar_telefono(valor), "+50251234567")
-        for valor in ("", "12345678", "81234567", "91234567", "5123456", "512345678", "+50351234567", "50251234567", "abcd1234", "５１２３４５６７"):
+        for valor in ("", "12345678", "01234567", "91234567", "5123456", "512345678", "+50351234567", "50251234567", "abcd1234", "５１２３４５６７"):
             with self.subTest(valor=valor), self.assertRaises(ValidationError):
                 normalizar_telefono(valor)
+
+    def test_prefijo_movil_8_se_normaliza_y_guarda(self):
+        for valor, esperado in (("80000000", "+50280000000"), ("89999999", "+50289999999"),
+                                ("81234567", "+50281234567"), ("+50281234567", "+50281234567"),
+                                (" 8123 4567 ", "+50281234567"), ("+502 8123 4567", "+50281234567")):
+            with self.subTest(valor=valor):
+                self.assertEqual(normalizar_telefono(valor), esperado)
+                self.assertEqual(self.client.post("/mi-perfil/", self.datos(telefono=valor)).status_code, 302)
+                self.perfil.refresh_from_db()
+                self.assertEqual(self.perfil.telefono, esperado)
+
+    def test_errores_conservan_telefono_anterior_incluso_al_recargar(self):
+        for valor in ("12345678", "91234567", "8123456", "812345678", "+50381234567"):
+            with self.subTest(valor=valor):
+                self.assertContains(self.client.post("/mi-perfil/", self.datos(telefono=valor)), "entre 2 y 8")
+                self.perfil.refresh_from_db()
+                self.assertEqual(self.perfil.telefono, "+50251234567")
+                self.assertEqual(self.client.get("/mi-perfil/").context["form"].initial["telefono"], "+50251234567")
+        self.assertFalse(EventoContacto.objects.exists())
 
     def test_anonimo_y_roles_no_autorizados(self):
         self.client.logout()
