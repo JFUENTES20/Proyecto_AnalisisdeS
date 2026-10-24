@@ -164,6 +164,12 @@ if os.getenv("GBI_SCHEMA")=="redesign":
                 raise RuntimeError("Comando fallido: "+" ".join(command[:3])+"\n"+result.stdout+result.stderr)
             return result.stdout if ok else result.stderr
         def shell(db, code, **kw):
+            if kw.get("schema") == "redesign":
+                # Solo en el generador de fixtures desechables: el modelo de origen
+                # debe coincidir con su migración histórica, sin la nueva foto.
+                code = ("from usuarios.models import Perfil\n"
+                        "Perfil._meta.local_fields = [f for f in Perfil._meta.local_fields if f.name != 'fotografia']\n"
+                        "Perfil._meta._expire_cache()\n" + code)
             return run(db,"shell","-c","import os\n"+code,**kw)
         try:
             fresh = database("fresh")

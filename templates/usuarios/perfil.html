@@ -1,20 +1,48 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Mi perfil · GuateBecas{% endblock %}
 {% block content %}
 <section class="formulario-centrado">
-    <p class="eyebrow">MI INFORMACIÓN DE CONTACTO</p>
+    <p class="eyebrow">MI CUENTA GUATEBECAS</p>
     <h1>Mi perfil</h1>
-    <p>Aquí puedes consultar y actualizar tu teléfono de contacto.</p>
-    <article class="tarjeta">
-        <h2>Teléfono vigente</h2>
-        <p>{{ telefono_actual|default:"Aún no has registrado un teléfono." }}</p>
+    <header class="perfil-encabezado tarjeta">
+        {% if perfil.fotografia %}
+            <img class="perfil-avatar" src="{% url 'ver_fotografia' user.pk %}" alt="Tu fotografía de perfil" width="112" height="112">
+        {% else %}
+            <span class="perfil-avatar perfil-iniciales" role="img" aria-label="Iniciales de tu nombre">{{ iniciales }}</span>
+        {% endif %}
+        <div><h2>{{ nombre_perfil }}</h2><p>Usuario: <strong>{{ user.username }}</strong></p></div>
+    </header>
+    <section class="tarjeta perfil-fotografia" aria-labelledby="titulo-foto">
+        <h2 id="titulo-foto">Fotografía opcional</h2>
+        <p>Puedes solicitar becas sin añadir una fotografía. Solo tú puedes verla desde tu perfil.</p>
+        <form method="post" enctype="multipart/form-data" action="{% url 'guardar_fotografia' %}" class="formulario" data-foto-form>
+            {% csrf_token %}<input type="hidden" name="accion" value="guardar">
+            {{ foto_form.as_p }}
+            <p data-foto-nombre aria-live="polite" data-sin-seleccion="{% if perfil.fotografia %}Selecciona una imagen nueva para cambiar tu fotografía.{% else %}Ningún archivo seleccionado.{% endif %}">{% if perfil.fotografia %}Selecciona una imagen nueva para cambiar tu fotografía.{% else %}Ningún archivo seleccionado.{% endif %}</p>
+            <div data-foto-preview hidden><p>Vista previa · aún no guardada</p><img class="perfil-avatar" alt="Vista previa de la fotografía seleccionada" width="112" height="112" data-foto-imagen></div>
+            <p data-foto-error role="alert"></p>
+            <button class="boton" type="submit">{% if perfil.fotografia %}Cambiar fotografía{% else %}Guardar fotografía{% endif %}</button>
+        </form>
+        {% if perfil.fotografia %}
+        <form method="post" action="{% url 'guardar_fotografia' %}" class="formulario">
+            {% csrf_token %}<input type="hidden" name="accion" value="eliminar">
+            <button class="boton secundario" type="submit">Eliminar fotografía</button>
+        </form>
+        {% endif %}
+    </section>
+    <section class="tarjeta perfil-tarjeta-contacto" aria-labelledby="titulo-contacto">
+        <h2 id="titulo-contacto">Contacto</h2>
+        <p>Aquí puedes consultar y actualizar tu teléfono de contacto.</p>
+        <p><strong>Teléfono vigente:</strong> {{ telefono_actual|default:"Aún no has registrado un teléfono." }}</p>
         {% if telefono_historico %}<p class="nota">Teléfono histórico conservado: {{ telefono_historico }}. Este dato se mantiene como archivo.</p>{% endif %}
         {% if discrepancia %}<p role="note">El contacto vigente y el dato histórico difieren. Revisa ambos y confirma el teléfono antes de guardar. El histórico no se reemplazará.</p>{% endif %}
-    </article>
-    <form method="post" class="tarjeta formulario perfil-contacto">{% csrf_token %}
-        {{ form.as_p }}
-        <button class="boton" type="submit">Guardar teléfono</button>
-    </form>
+        <form method="post" class="formulario perfil-contacto">{% csrf_token %}
+            {{ form.as_p }}
+            <button class="boton" type="submit">Guardar teléfono</button>
+        </form>
+    </section>
+    <script src="{% static 'js/fotografia.js' %}" defer></script>
     <a class="volver" href="{% url 'panel' %}">← Volver a mi panel</a>
 </section>
 {% endblock %}
