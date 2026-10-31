@@ -4,11 +4,15 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.forms import HiddenInput
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.http import FileResponse, Http404
+from django.views.decorators.http import require_POST
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
 from .contacto import actualizar_telefono, hay_discrepancia, telefono_historico, version_contacto
-from .forms import ContactoForm, RegistroForm
+from .forms import ContactoForm, FotografiaForm, RegistroForm
+from .fotografia import cambiar_fotografia
 from .models import Perfil
 from .permisos import rol_de
 
@@ -51,5 +55,59 @@ def mi_perfil(request):
             else:
                 messages.success(request, "Teléfono actualizado." if cambio else "Tu teléfono ya estaba actualizado.")
                 return redirect("mi_perfil")
-    return render(request, "usuarios/perfil.html", {"form": form, "telefono_actual": perfil.telefono,
+    nombre = request.user.get_full_name().strip() or request.user.username
+    iniciales = "".join(palabra[0] for palabra in nombre.split()[:2]).upper()
+    return render(request, "usuarios/perfil.html", {"form": form, "perfil": perfil,
+        "nombre_perfil": nombre, "iniciales": iniciales,
+        "foto_form": FotografiaForm(), "telefono_actual": perfil.telefono,
                                                     "telefono_historico": historico, "discrepancia": discrepancia})
+
+
+@login_required
+@require_POST
+def guardar_fotografia(request):
+    if rol_de(request.user) != "aspirante":
+        raise PermissionDenied
+    if set(request.POST) - {"csrfmiddlewaretoken", "accion"} or set(request.FILES) - {"fotografia"}:
+        raise PermissionDenied
+    accion = request.POST.get("accion")
+    if accion not in {"guardar", "eliminar"}:
+        raise PermissionDenied
+    if accion == "eliminar":
+        if request.FILES:
+            raise PermissionDenied
+        cambiar_fotografia(request.user, eliminar=True)
+        messages.success(request, "Fotografía eliminada. Se mostrarán tus iniciales.")
+    else:
+        form = FotografiaForm(request.POST, request.FILES)
+        if not form.is_valid():
+            for error in form.errors.get("fotografia", []):
+                messages.error(request, error)
+        else:
+            try:
+                cambiar_fotografia(request.user, form.cleaned_data["fotografia"])
+            except ValidationError as error:
+                for mensaje in error.messages:
+                    messages.error(request, mensaje)
+            else:
+                messages.success(request, "Fotografía actualizada.")
+    return redirect("mi_perfil")
+
+
+@login_required
+@require_http_methods(["GET", "HEAD"])
+@never_cache
+def ver_fotografia(request, usuario_id):
+    if usuario_id != request.user.pk or rol_de(request.user) != "aspirante":
+        raise Http404
+    perfil = get_object_or_404(Perfil, usuario_id=request.user.pk)
+    if not perfil.fotografia:
+        raise Http404
+    try:
+        archivo = perfil.fotografia.open("rb")
+    except FileNotFoundError:
+        raise Http404
+    response = FileResponse(archivo, content_type="image/jpeg")
+    response["Content-Disposition"] = 'inline; filename="fotografia.jpg"'
+    response["Cache-Control"] = "private, no-store"
+    return response

@@ -978,3 +978,21 @@ main, footer { overflow-wrap: anywhere; }
 
 .perfil-contacto input[type=checkbox] { width: 24px; height: 24px; vertical-align: middle; margin: 10px; }
 .perfil-contacto label:has(input[type=checkbox]) { display: flex; align-items: flex-start; gap: 8px; }
+
+.perfil-encabezado { display: flex; align-items: center; gap: 22px; }
+.perfil-encabezado > div { min-width: 0; }
+.perfil-encabezado h2 { margin: 0 0 10px; }
+.perfil-avatar { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 3px solid var(--verde); }
+.perfil-iniciales { display: inline-flex; justify-content: center; align-items: center; background: var(--menta); color: var(--azul); font-size: 36px; font-weight: 700; }
+.perfil-fotografia { margin-top: 22px; margin-bottom: 28px; }
+.perfil-fotografia [role=alert] { color: #9a3c38; }
+@media (max-width: 480px) {
+    .perfil-encabezado { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
+
+/* El nombre se presenta en una línea independiente que puede envolver en móvil. */
+.perfil-fotografia .formulario input[type=file] { font-size: 0; }
+.perfil-fotografia input[type=file]::file-selector-button { font-size: 16px; }
+.perfil-fotografia [data-foto-nombre] { overflow-wrap: anywhere; font-size: 13px; }
+
+.perfil-tarjeta-contacto { margin-bottom: 28px; }

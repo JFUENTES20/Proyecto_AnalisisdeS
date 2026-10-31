@@ -21,9 +21,17 @@ MODELOS = (
 
 def snapshot(alias):
     objetos = []
+    campos = set()
     for label in MODELOS:
-        objetos.extend(apps.get_model(label)._base_manager.using(alias).order_by("pk"))
-    return serializers.serialize("json", objetos, use_natural_foreign_keys=True)
+        model = apps.get_model(label)
+        campos.update(f.name for f in model._meta.get_fields() if f.name != "fotografia")
+        queryset = model._base_manager.using(alias).order_by("pk")
+        if label == "usuarios.perfil":
+            queryset = queryset.defer("fotografia")
+        objetos.extend(queryset)
+    # Este comando solo transfiere el rediseño previo, que no contenía fotografías.
+    return serializers.serialize("json", objetos, fields=campos, use_natural_foreign_keys=True)
+
 
 
 def canonico(value):
