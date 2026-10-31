@@ -914,3 +914,64 @@ main, footer { overflow-wrap: anywhere; }
     .tabla-expedientes td > a { width: 100%; justify-content: center; border: 1px solid var(--borde); border-radius: 6px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Navegación por disclosure: los enlaces siguen disponibles sin JavaScript. */
+.menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    background: white;
+    color: var(--tinta);
+    font-weight: 600;
+}
+.menu-toggle[hidden], .cabecera nav[hidden] { display: none; }
+.menu-toggle[aria-expanded="true"] {
+    border-color: var(--jade);
+    background: var(--menta);
+}
+.menu-icon { display: grid; gap: 4px; width: 20px; }
+.menu-icon span { display: block; height: 2px; background: currentColor; border-radius: 2px; }
+.menu-toggle[aria-expanded="true"] .menu-icon span:first-child { transform: translateY(6px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] .menu-icon span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] .menu-icon span:last-child { transform: translateY(-6px) rotate(-45deg); }
+@media (max-width: 800px) {
+    .cabecera {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 5%;
+    }
+    .cabecera .marca { flex: 0 1 auto; min-width: 0; font-size: 23px; }
+    .menu-toggle { display: inline-flex; flex-shrink: 0; }
+    .cabecera nav {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        flex: 1 0 100%;
+        width: 100%;
+        gap: 6px;
+        padding-top: 12px;
+        border-top: 1px solid var(--borde);
+        font-size: 15px;
+    }
+    .cabecera nav a, .cabecera nav button {
+        width: 100%;
+        min-height: 44px;
+        justify-content: flex-start;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 6px;
+        text-align: left;
+    }
+    .cabecera nav .boton { justify-content: center; padding: 12px; }
+    .cabecera nav form { width: 100%; }
+    .cabecera nav a:hover, .cabecera nav .enlace:hover { background: var(--menta); }
+    .cabecera nav .boton:hover { background: var(--verde); }
+}
