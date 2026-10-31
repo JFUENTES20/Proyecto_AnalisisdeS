@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<section class="formulario-centrado"><h1>Cerrar sesión</h1><p>Confirma que deseas salir de GuateBecas.</p><form class="formulario tarjeta" method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="boton" type="submit">Cerrar mi sesión</button></form><a href="{% url 'panel' %}">Volver a mi panel</a></section>{% endblock %}

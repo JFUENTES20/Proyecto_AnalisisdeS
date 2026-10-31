@@ -1,0 +1,40 @@
+name: Calidad GuateBecas
+on: [push, pull_request]
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [sqlite, postgresql]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: becanet
+          POSTGRES_USER: becanet
+          POSTGRES_PASSWORD: solo-ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DB_ENGINE: ${{ matrix.engine }}
+      DB_NAME: becanet
+      DB_USER: becanet
+      DB_PASSWORD: solo-ci
+      DB_HOST: localhost
+      DB_PORT: '5432'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - run: python manage.py check
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py test --verbosity 2
+      - run: python scripts/verificar_reconciliacion.py --engine "${{ matrix.engine }}"
