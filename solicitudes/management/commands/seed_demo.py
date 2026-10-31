@@ -10,11 +10,52 @@ from evaluaciones.models import Comite
 from usuarios.models import Perfil
 
 
+DESCRIPCION_DEMO_ANTERIOR = (
+    "Programa ficticio para apoyar la continuidad académica y el desarrollo profesional de estudiantes."
+)
+CONVOCATORIAS_DEMO = (
+    (
+        "Beca de continuidad universitaria", "universitario", "18000",
+        "Promueve la continuidad de los estudios universitarios en Guatemala y el avance "
+        "de los estudiantes en su formación académica y profesional.",
+    ),
+    (
+        "Impulso a la educación media", "medio", "8000",
+        "Busca impulsar la permanencia de los estudiantes en la educación media en Guatemala "
+        "y fortalecer su preparación académica para continuar sus estudios y desarrollar sus proyectos de vida.",
+    ),
+    (
+        "Especialización y nuevos horizontes", "posgrado", "25000",
+        "Tiene como propósito fomentar la formación de posgrado y la especialización de "
+        "estudiantes en Guatemala, para profundizar sus conocimientos y contribuir a su "
+        "desarrollo académico y profesional.",
+    ),
+)
+
+
 class Command(BaseCommand):
     help = "Crea cuentas y convocatorias ficticias, sin reemplazar usuarios existentes."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--actualizar-textos", action="store_true",
+            help="Actualiza solo descripciones antiguas reconocidas, sin crear cuentas ni convocatorias.",
+        )
+
     @transaction.atomic
     def handle(self, *args, **options):
+        if options["actualizar_textos"]:
+            actualizadas = 0
+            for titulo, nivel, _, descripcion in CONVOCATORIAS_DEMO:
+                # Coincidencia exacta: no modificar textos personalizados ni otros programas.
+                actualizadas += Convocatoria.objects.filter(
+                    titulo=titulo, nivel=nivel, descripcion=DESCRIPCION_DEMO_ANTERIOR,
+                ).update(descripcion=descripcion)
+            self.stdout.write(self.style.SUCCESS(
+                f"Descripciones actualizadas: {actualizadas}. No se crearon datos ni se modificaron textos personalizados."
+            ))
+            return
+
         clave = os.environ.get("DEMO_PASSWORD")
         if not clave or len(clave) < 12:
             raise CommandError(
@@ -47,16 +88,12 @@ class Command(BaseCommand):
                 f"{username}: " + ("creada" if creado else "existente, sin cambios")
             )
         hoy = timezone.localdate()
-        for titulo, nivel, monto in [
-            ("Beca de continuidad universitaria", "universitario", "18000"),
-            ("Impulso a la educación media", "medio", "8000"),
-            ("Especialización y nuevos horizontes", "posgrado", "25000"),
-        ]:
+        for titulo, nivel, monto, descripcion in CONVOCATORIAS_DEMO:
             convocatoria, _ = Convocatoria.objects.get_or_create(
                 titulo=titulo,
                 defaults={
                     "nivel": nivel,
-                    "descripcion": "Programa ficticio para apoyar la continuidad académica y el desarrollo profesional de estudiantes.",
+                    "descripcion": descripcion,
                     "requisitos": "Constancia de estudios.\nCertificación de notas.\nCarta de motivación.",
                     "monto_maximo": Decimal(monto),
                     "apertura": hoy - timedelta(days=3),
