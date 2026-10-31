@@ -59,3 +59,19 @@ class EventoFotografia(models.Model):
     operacion = models.CharField(max_length=20)
     resultado = models.CharField(max_length=20, default="actualizado")
     fecha = models.DateTimeField(auto_now_add=True)
+
+
+class LimiteRecuperacion(models.Model):
+    clave = models.CharField(max_length=64, unique=True)
+    ventana = models.DateTimeField(db_index=True)
+    intentos = models.PositiveIntegerField(default=0)
+
+
+class SolicitudRecuperacion(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    correo_hash = models.CharField(max_length=64)
+    password_hash = models.CharField(max_length=64, blank=True)
+    origen = models.URLField(max_length=254)
+    estado = models.CharField(max_length=16, default="pendiente", db_index=True)
+    creada = models.DateTimeField(auto_now_add=True)
+    procesada = models.DateTimeField(null=True)

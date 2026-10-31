@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
 from solicitudes import views
+from usuarios.recuperacion import ConfirmarRecuperacionView, SolicitarRecuperacionView
 from usuarios.views import registro, mi_perfil, guardar_fotografia, ver_fotografia
 
 admin.site.site_header = "GuateBecas · Administración"
@@ -20,6 +21,10 @@ urlpatterns = [
         name="crear_solicitud",
     ),
     path("acceso/", auth_views.LoginView.as_view(), name="login"),
+    path("recuperar/", SolicitarRecuperacionView.as_view(), name="password_reset"),
+    path("recuperar/solicitado/", auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
+    path("recuperar/<uidb64>/<token>/", ConfirmarRecuperacionView.as_view(), name="password_reset_confirm"),
+    path("recuperar/completado/", auth_views.PasswordResetCompleteView.as_view(), name="password_reset_complete"),
     path("salir/", auth_views.LogoutView.as_view(), name="logout"),
     path("registro/", registro, name="registro"),
     path("panel/", views.panel, name="panel"),

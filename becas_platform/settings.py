@@ -97,3 +97,25 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 12 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
+
+
+# Recuperación: valores privados exportados por entorno, nunca en Git.
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() == "true"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "false").lower() == "true"
+EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "10"))
+EMAIL_FILE_PATH = os.getenv("EMAIL_FILE_PATH", str(BASE_DIR / ".local/correos"))
+PASSWORD_RESET_TIMEOUT = int(os.getenv("PASSWORD_RESET_TIMEOUT", "3600"))
+PASSWORD_RESET_PUBLIC_ORIGIN = os.getenv("PASSWORD_RESET_PUBLIC_ORIGIN", "")
+PASSWORD_RESET_TRUSTED_PROXIES = [v.strip() for v in os.getenv("PASSWORD_RESET_TRUSTED_PROXIES", "").split(",") if v.strip()]
+PASSWORD_RESET_RATE_WINDOW = int(os.getenv("PASSWORD_RESET_RATE_WINDOW", "900"))
+PASSWORD_RESET_EMAIL_LIMIT = int(os.getenv("PASSWORD_RESET_EMAIL_LIMIT", "3"))
+PASSWORD_RESET_IP_LIMIT = int(os.getenv("PASSWORD_RESET_IP_LIMIT", "20"))
+
+# CA de confianza para el backend SMTP publicado (no es un certificado cliente).
+# En Ubuntu normalmente sirve el almacén predeterminado; en esta Mac se comprobó
+# /etc/ssl/cert.pem. Nunca usar CERT_NONE ni desactivar hostname.
+EMAIL_CA_BUNDLE = os.getenv("EMAIL_CA_BUNDLE", "")

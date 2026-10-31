@@ -9,7 +9,18 @@ Primera versión local del rediseño: convocatorias públicas; registro de aspir
 
 El personal configura convocatorias, comités y perfiles desde `/admin/`. Las decisiones sobre expedientes se realizan desde el portal para que pasen por los servicios de negocio, nunca editando el estado en el administrador.
 
-**Pendiente:** verificación de correo, recuperación de contraseña, Web Push, instalación como PWA, HTTPS, alojamiento AWS y pruebas de concurrencia/carga. No cargar documentos personales reales ni publicar esta versión como un servicio gubernamental. Los campos monetarios no muestran moneda hasta confirmar su unidad y periodicidad con el Product Owner.
+**Pendiente:** verificación de correo, Web Push, instalación como PWA y pruebas de concurrencia/carga. El usuario reportó un despliegue base AWS/HTTPS; su actualización con recuperación y su respaldo/restauración siguen pendientes de verificación. No cargar documentos personales reales ni publicar esta versión como un servicio gubernamental. Los campos monetarios no muestran moneda hasta confirmar su unidad y periodicidad con el Product Owner.
+
+## Recuperación de contraseña
+
+La rama incluye recuperación Django con cola, controles por IP/correo y backend
+SMTP publicado con CA configurable y validación TLS. El usuario confirmó solicitud,
+recepción en Gmail, cambio de contraseña y acceso desde una vista local independiente.
+Esa validación no equivale a haber desplegado este incremento en AWS.
+
+Configuración, límites y evidencia: [recuperacion-correo.md](docs/rediseno/recuperacion-correo.md).
+Plan AWS, respaldo, supervisión y reversión (sin ejecutar):
+[recuperacion-aws.md](docs/despliegue/recuperacion-aws.md).
 
 ## Equipo
 
@@ -17,7 +28,7 @@ Jose Fuentes · Pablo Maldonado · Flor Escobar · Elena Ovalle · Karen Canuc.
 
 ## Ejecutar en macOS (incluido Apple Silicon)
 
-Necesitas Python 3.13 y Git. Los comandos se ejecutan dentro de la carpeta del proyecto. Validado en esta Mac con Python 3.13.3, Django 5.2.18 y SQLite; 39 pruebas aprobadas en SQLite y PostgreSQL 16.9.
+Necesitas Python 3.13 y Git. Los comandos se ejecutan dentro de la carpeta del proyecto. Validado en esta Mac con Python 3.13.3, Django 5.2.18 y SQLite; 110 pruebas aprobadas en SQLite y PostgreSQL 16.9 en el incremento actual de recuperación.
 
 ```bash
 python3 -m venv .venv
@@ -70,7 +81,7 @@ python manage.py makemigrations --check --dry-run
 python manage.py test
 ```
 
-GitHub Actions conserva PostgreSQL 16 y añade una matriz SQLite/PostgreSQL con comprobaciones de reconciliación. Esa nueva matriz aún no se ha ejecutado remotamente; el commit original 55b90dd sí pasó CI según confirmación del usuario. SQLite no verifica el bloqueo de filas de PostgreSQL: antes del despliegue se deben probar solicitudes simultáneas contra PostgreSQL.
+GitHub Actions ejecuta la matriz SQLite/PostgreSQL 16 con comprobaciones de reconciliación. Los resultados corresponden a cada commit: consultar la ejecución del candidato en GitHub antes de entregar. SQLite no verifica el bloqueo de filas de PostgreSQL: antes del despliegue se deben probar solicitudes simultáneas contra PostgreSQL.
 
 ## Organización
 
@@ -109,8 +120,7 @@ DB_HOST=/tmp/gb-integration-pg DB_PORT=55441 DB_USER=gb_test \
   .venv/bin/python scripts/verificar_reconciliacion.py --engine postgresql
 ```
 
-Ambos comandos crean destinos desechables. El PR propuesto es desde esta rama a
-`develop`; todavía no se ha abierto ni se ha publicado la rama de integración.
+Ambos comandos crean destinos desechables. El [PR de integración #6](https://github.com/JFUENTES20/Proyecto_AnalisisdeS/pull/6) conserva el historial de la integración; las mejoras posteriores se revisan mediante PR encadenados. Esta rama de recuperación tiene como base feature/foto-perfil.
 
 ## Antes de publicar
 
