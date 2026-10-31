@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
 from solicitudes import views
-from usuarios.views import registro
+from usuarios.views import registro, mi_perfil
 
 admin.site.site_header = "GuateBecas · Administración"
 admin.site.site_title = "GuateBecas"
@@ -23,6 +23,7 @@ urlpatterns = [
     path("salir/", auth_views.LogoutView.as_view(), name="logout"),
     path("registro/", registro, name="registro"),
     path("panel/", views.panel, name="panel"),
+    path("mi-perfil/", mi_perfil, name="mi_perfil"),
     path("solicitudes/", include("solicitudes.urls")),
     path("documentos/<int:pk>/", views.descargar_documento, name="descargar_documento"),
     path("notificaciones/", views.notificaciones, name="notificaciones"),

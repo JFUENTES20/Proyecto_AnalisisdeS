@@ -24,6 +24,7 @@
             <a href="{% url 'inicio' %}#convocatorias">Convocatorias</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'panel' %}">Mi panel</a>
+                {% if rol_actual == 'aspirante' %}<a href="{% url 'mi_perfil' %}">Mi perfil</a>{% endif %}
                 <a href="{% url 'solicitudes_list' %}">Expedientes</a>
                 <a href="{% url 'notificaciones' %}">Avisos <span class="contador">{{ avisos_pendientes }}</span></a>
                 <form method="post" action="{% url 'logout' %}">

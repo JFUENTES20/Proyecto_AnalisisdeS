@@ -975,3 +975,6 @@ main, footer { overflow-wrap: anywhere; }
     .cabecera nav a:hover, .cabecera nav .enlace:hover { background: var(--menta); }
     .cabecera nav .boton:hover { background: var(--verde); }
 }
+
+.perfil-contacto input[type=checkbox] { width: 24px; height: 24px; vertical-align: middle; margin: 10px; }
+.perfil-contacto label:has(input[type=checkbox]) { display: flex; align-items: flex-start; gap: 8px; }
