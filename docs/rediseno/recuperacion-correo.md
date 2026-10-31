@@ -2,8 +2,8 @@
 
 Incremento local del 30 de octubre de 2026 (America/Guatemala), en
 `~/Documents/GuateBecas-recuperacion`, rama `feature/recuperacion-correo`, basada
-en `origin/feature/foto-perfil` 880bfb4. Incremento guardado mediante un commit
-local, sin push, fusiones, nuevos PR ni cambios en AWS. `chore/cierre-entrega` y su documento pendiente se conservan.
+en `origin/feature/foto-perfil` 880bfb4. Incremento inicial publicado en d3dd3f2; esta actualización agrega TLS publicable,
+validación real y un plan AWS pendiente. No se han fusionado ramas ni modificado AWS. `chore/cierre-entrega` y su documento pendiente se conservan.
 No se alteró el diseño: se reutilizan base.html, estilos y formularios existentes;
 solo se añade «¿Olvidaste tu contraseña?» al acceso y las pantallas del flujo.
 
@@ -131,12 +131,13 @@ fuera de Git y de la conversación. Web y trabajador deben compartir configuraci
 
 | Variable | Uso |
 |---|---|
-| EMAIL_BACKEND | Consola local por defecto; SMTP real usa django.core.mail.backends.smtp.EmailBackend |
+| EMAIL_BACKEND | Consola local por defecto; SMTP real usa usuarios.email_backend.EmailBackend |
 | EMAIL_HOST / EMAIL_PORT | Host y puerto del proveedor; usualmente 587 STARTTLS o 465 TLS implícito, confirmar con él |
 | EMAIL_USE_TLS / EMAIL_USE_SSL | Activar exactamente el modo adecuado; no ambos. Para 465: SSL=true, TLS=false |
 | EMAIL_HOST_USER / EMAIL_HOST_PASSWORD | Autenticación privada. No incluir valores en Git, documentos o chat |
 | EMAIL_TIMEOUT | Tiempo de conexión/envío; 10 segundos predeterminados |
 | DEFAULT_FROM_EMAIL | Remitente autorizado por el proveedor, con nombre visible si corresponde |
+| EMAIL_CA_BUNDLE | Almacén CA opcional para el backend publicado; mantiene certificado/hostname verificados; no es una clave privada |
 | EMAIL_FILE_PATH | Solo backend de archivo local; directorio privado fuera de static/media pública |
 | PASSWORD_RESET_PUBLIC_ORIGIN | Origen público HTTPS canónico, sin ruta, query ni credenciales. Evita construir enlaces a partir de Host/X-Forwarded-Host del cliente |
 | PASSWORD_RESET_TIMEOUT | Vida del token y máximo de espera en cola, 3600 segundos |
@@ -233,10 +234,10 @@ sensibles, por lo que .local, logs, configuración, SQLite, media, venv y captur
 permanecen excluidos de Git. No se publican enlaces/token en la documentación.
 Secreto y cookies de sesión/CSRF son independientes de las otras vistas.
 
-Esta demostración **no acredita envío a una bandeja real**. El primer mensaje
+La demostración inicial de **8005** no acredita envío a una bandeja real. El primer mensaje
 visible podría pertenecer a la prueba automatizada y estar ya utilizado: pedir
-uno nuevo antes de validar. Quedan pendientes proveedor y entrega real; la
-validación manual local del usuario se registra a continuación. No se implementaron push ni correos por cambios de expediente.
+uno nuevo antes de validar. En ese hito quedaban pendientes proveedor y entrega
+real; la prueba posterior con Gmail se registra más abajo. No se implementaron push ni correos por cambios de expediente.
 
 
 ## Validación manual confirmada por el usuario
@@ -252,3 +253,67 @@ El usuario confirmó el flujo en la vista previa local de recuperación:
 No se incluyen direcciones personales, contraseñas, tokens ni otros datos que
 identifiquen la cuenta. Esta confirmación acredita el flujo local con backend de
 pruebas, no entrega real por SMTP ni funcionamiento del proveedor en AWS.
+
+
+## Validación manual posterior con correo real (8006)
+
+El usuario confirmó el flujo completo en una vista previa independiente de 8006:
+
+- Solicitud de recuperación desde el formulario de esa vista.
+- Recepción del mensaje real en Gmail.
+- Apertura del enlace recibido, dirigido a la vista local.
+- Cambio de contraseña completado.
+- Inicio de sesión satisfactorio con la contraseña nueva.
+
+No se incluyen correo personal, contraseña, token, identificadores privados ni
+capturas. La cuenta de prueba pertenecía a una base separada, sin modificar las
+cuentas originales ni el servidor/buzón de 8005. Se conserva como evidencia del
+flujo local con Gmail real, distinta de la prueba anterior de buzón de archivos.
+No acredita despliegue de recuperación en AWS ni aceptación del equipo/docente.
+
+## TLS reproducible en código publicado
+
+La prueba de 8006 usó inicialmente un backend privado para corregir la confianza
+CA de Python en esta Mac. Ese arreglo no bastaba como entrega publicable.
+Ahora `usuarios/email_backend.py` contiene un backend SMTP configurable con
+`EMAIL_CA_BUNDLE`, que crea un contexto TLS verificado y también puede usar las
+CA predeterminadas del runtime. No importa código de .local ni contiene rutas de
+secretos o credenciales. Configurar EMAIL_BACKEND=usuarios.email_backend.EmailBackend
+para SMTP. En esta Mac se comprobó /etc/ssl/cert.pem; en Ubuntu se prepara el
+almacén del sistema, no se traslada un archivo privado de la Mac.
+Una CA inválida falla cerrada: no se suprime la verificación de certificado o
+hostname. El certificado cliente de Django sigue siendo independiente del CA.
+
+Se probó nuevamente el backend **publicado** desde un proceso Django, con la CA
+configurada, STARTTLS y autenticación reales, CERT_REQUIRED y check_hostname
+activos, bloqueando todos los métodos de envío. No se envió un nuevo mensaje en
+esa comprobación. Este chequeo verifica transporte/autenticación del código
+publicado; la recepción del flujo completo fue la confirmación manual previa
+sobre 8006, no un reenvío atribuido al nuevo backend.
+
+Resultado actual: **110 pruebas aprobadas por motor** (102 anteriores + 8 nuevas)
+en SQLite y PostgreSQL 16.9. Las nuevas comprueban contexto estricto, CA explícita,
+CA ausente/inválida, transporte STARTTLS, trabajador con backend publicado y URL
+HTTPS, rutas privadas 404 con DEBUG=false y rechazo de backends/URLconf privados
+en checks de despliegue. Migraciones sin pendientes y reconciliación desde cero,
+develop y rediseño previo aprobadas en ambos motores sobre bases desechables.
+No hay nueva migración en esta actualización TLS: continúa 0006 del incremento.
+
+## Producción y entrega siguiente
+
+El URLconf publicado nunca incluye /demo-correo/ ni los buzones privados; las
+pruebas con DEBUG=false comprueban 404 para /demo-correo/, /correos/ y /.local/correos/.
+check --deploy rechaza backend de pruebas/privado y un URLconf no publicado.
+Esto verifica código y configuración prevista, **no inspecciona el servidor AWS**.
+Las vistas locales de prueba se conservan deliberadamente: no son producción.
+El fragmento Nginx de entrega también bloquea esas rutas y evita access logs de
+recuperación con tokens. Deben revisarse otros logs antes de activar en AWS.
+
+Plan, respaldo previo, restauración de ensayo, trabajador systemd, configuración
+compartida y reversión no destructiva:
+[docs/despliegue/recuperacion-aws.md](../despliegue/recuperacion-aws.md).
+Plantillas revisables en deploy/recuperacion/, sin credenciales reales. Requieren
+adaptar usuario, rutas, dominio y upstream y validarse con herramientas Linux.
+No se instalaron servicios, habilitaron alertas, ejecutaron respaldos ni migraciones
+en AWS. Pendientes: revisión humana, ensayo/ejecución autorizados, verificación de
+backup/restauración y validación final del flujo en el dominio HTTPS público.

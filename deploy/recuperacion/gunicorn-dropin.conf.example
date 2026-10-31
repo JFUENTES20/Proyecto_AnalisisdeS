@@ -1,0 +1,4 @@
+# PLANTILLA de drop-in para la unidad Gunicorn YA EXISTENTE.
+# No reemplaza ExecStart, usuario, rutas, socket ni secretos de la aplicación.
+[Service]
+EnvironmentFile=/etc/guatebecas/recuperacion.env

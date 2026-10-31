@@ -1,0 +1,35 @@
+# PLANTILLA: adaptar usuario, rutas y entorno; no instalada ni probada en AWS.
+[Unit]
+Description=GuateBecas - cola de recuperacion de contrasena
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=guatebecas
+Group=guatebecas
+WorkingDirectory=/srv/guatebecas/current
+EnvironmentFile=/etc/guatebecas/app.env
+EnvironmentFile=/etc/guatebecas/recuperacion.env
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStartPre=/srv/guatebecas/current/.venv/bin/python manage.py check --deploy --fail-level ERROR
+ExecStartPre=/srv/guatebecas/current/.venv/bin/python manage.py shell -c "from django.db import connection; assert connection.vendor == 'postgresql'; connection.ensure_connection()"
+ExecStart=/srv/guatebecas/current/.venv/bin/python manage.py procesar_recuperaciones --watch --interval 2 --limit 50
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=45
+TimeoutStopSec=30
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

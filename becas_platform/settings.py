@@ -114,3 +114,8 @@ PASSWORD_RESET_TRUSTED_PROXIES = [v.strip() for v in os.getenv("PASSWORD_RESET_T
 PASSWORD_RESET_RATE_WINDOW = int(os.getenv("PASSWORD_RESET_RATE_WINDOW", "900"))
 PASSWORD_RESET_EMAIL_LIMIT = int(os.getenv("PASSWORD_RESET_EMAIL_LIMIT", "3"))
 PASSWORD_RESET_IP_LIMIT = int(os.getenv("PASSWORD_RESET_IP_LIMIT", "20"))
+
+# CA de confianza para el backend SMTP publicado (no es un certificado cliente).
+# En Ubuntu normalmente sirve el almacén predeterminado; en esta Mac se comprobó
+# /etc/ssl/cert.pem. Nunca usar CERT_NONE ni desactivar hostname.
+EMAIL_CA_BUNDLE = os.getenv("EMAIL_CA_BUNDLE", "")

@@ -1,4 +1,5 @@
 import ipaddress
+import ssl
 from urllib.parse import urlsplit
 from django.conf import settings
 from django.core.checks import Error, register
@@ -17,8 +18,13 @@ def configuracion_recuperacion(app_configs, **kwargs):
             ipaddress.ip_network(red)
     except ValueError:
         errores.append(Error("Proxy de recuperación inválido; usa IP o red explícita.", id="usuarios.E003"))
-    if settings.EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend" and not settings.EMAIL_HOST:
+    if settings.EMAIL_BACKEND in {"django.core.mail.backends.smtp.EmailBackend", "usuarios.email_backend.EmailBackend"} and not settings.EMAIL_HOST:
         errores.append(Error("Configura EMAIL_HOST para utilizar SMTP.", id="usuarios.E006"))
+    if settings.EMAIL_CA_BUNDLE:
+        try:
+            ssl.create_default_context(cafile=settings.EMAIL_CA_BUNDLE)
+        except (OSError, ssl.SSLError):
+            errores.append(Error("EMAIL_CA_BUNDLE no es un almacén CA legible y válido.", id="usuarios.E008"))
     origen = settings.PASSWORD_RESET_PUBLIC_ORIGIN
     try:
         p = urlsplit(origen)
@@ -34,9 +40,14 @@ def configuracion_recuperacion(app_configs, **kwargs):
 
 @register(deploy=True)
 def origen_produccion(app_configs, **kwargs):
-    if not settings.DEBUG and not settings.PASSWORD_RESET_PUBLIC_ORIGIN:
-        return [Error("Configura PASSWORD_RESET_PUBLIC_ORIGIN antes de servir recuperación en producción.", id="usuarios.E005")]
-    if (not settings.DEBUG and settings.EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend"
-            and not (settings.EMAIL_USE_TLS or settings.EMAIL_USE_SSL)):
-        return [Error("Usa STARTTLS o SSL para SMTP público.", id="usuarios.E007")]
-    return []
+    errores = []
+    if not settings.DEBUG:
+        if not settings.PASSWORD_RESET_PUBLIC_ORIGIN:
+            errores.append(Error("Configura PASSWORD_RESET_PUBLIC_ORIGIN antes de servir recuperación en producción.", id="usuarios.E005"))
+        if settings.EMAIL_BACKEND != "usuarios.email_backend.EmailBackend":
+            errores.append(Error("Producción requiere el backend SMTP publicado, no backends locales de prueba o privados.", id="usuarios.E010"))
+        if not (settings.EMAIL_USE_TLS or settings.EMAIL_USE_SSL):
+            errores.append(Error("Usa STARTTLS o SSL para SMTP público.", id="usuarios.E007"))
+        if settings.ROOT_URLCONF != "becas_platform.urls":
+            errores.append(Error("Usa el URLconf publicado sin buzones privados de demostración.", id="usuarios.E009"))
+    return errores

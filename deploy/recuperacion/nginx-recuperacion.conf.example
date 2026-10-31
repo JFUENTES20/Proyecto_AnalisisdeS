@@ -1,0 +1,13 @@
+# FRAGMENTO: incluir en el server HTTPS existente, después de revisión manual.
+# REEMPLAZAR @GUNICORN_UPSTREAM@ con el upstream ACTUAL (incluyendo http://).
+# No sustituir certificados, DuckDNS, static/media ni configuración global.
+location ^~ /demo-correo/ { return 404; }
+location ^~ /.local/ { return 404; }
+location ^~ /correos/ { return 404; }
+location ^~ /recuperar/ {
+    access_log off; # Las URLs pueden contener tokens: no escribirlas en access logs.
+    proxy_pass @GUNICORN_UPSTREAM@;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $remote_addr; # Reemplazar; no proxy_add_x_forwarded_for.
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
