@@ -15,7 +15,7 @@ from .forms import DocumentoForm
 from .models import Solicitud, Documento, Notificacion
 from .patterns import NotificacionObserver
 from .reportes import ReporteBuilder, ExportadorCSV
-from .services import ExpedienteFacade
+from .services import ExpedienteFacade, puede_ver, visibles
 
 
 class FlujoBecasTests(TestCase):
@@ -273,8 +273,21 @@ class FlujoBecasTests(TestCase):
             self.client.get(reverse("solicitud_detalle", args=[s.pk])),
             "Adjunta constancia legible.",
         )
-        s = ExpedienteFacade.transicionar(self.aspirante, s.pk, "enviar")
-        self.assertEqual(s.estado, "pendiente")
+        with tempfile.TemporaryDirectory() as directorio, override_settings(MEDIA_ROOT=directorio):
+            self.client.post(
+                reverse("editar_solicitud", args=[s.pk]),
+                {"monto": "11000", "motivacion": "Motivación actualizada durante las correcciones."},
+            )
+            self.client.post(
+                reverse("adjuntar", args=[s.pk]),
+                {"nombre": "Constancia corregida", "archivo": SimpleUploadedFile("corregido.pdf", b"%PDF-1.4\nprueba")},
+            )
+            s.refresh_from_db()
+            self.assertEqual(s.monto, Decimal("11000"))
+            self.assertEqual(s.estado, "correcciones")
+            self.assertEqual(s.documentos.count(), 2)
+            s = ExpedienteFacade.transicionar(self.aspirante, s.pk, "enviar")
+            self.assertEqual(s.estado, "pendiente")
 
     def test_rechazo_tiene_motivo_y_estado_terminal(self):
         s = self.en_revision()
@@ -440,7 +453,104 @@ class FlujoBecasTests(TestCase):
     def test_cuentas_inactivas_no_reciben_avisos_operativos(self):
         self.evaluador.is_active = False
         self.evaluador.save()
-        self.en_revision()
+        s = self.crear()
+        Documento.objects.create(
+            solicitud=s, nombre="Constancia", archivo="prueba.pdf", cargado_por=self.aspirante
+        )
+        ExpedienteFacade.transicionar(self.aspirante, s.pk, "enviar")
         self.assertFalse(
             Notificacion.objects.filter(destinatario=self.evaluador).exists()
         )
+
+    def test_desactivar_revoca_sesion_existente_y_nuevo_acceso(self):
+        """Una sesión abierta no mantiene permisos tras desactivar la cuenta."""
+        s = self.en_revision()
+        for usuario in (self.aspirante, self.evaluador, self.aprobador):
+            with self.subTest(rol=usuario.perfil.rol):
+                self.client.force_login(usuario)
+                User.objects.filter(pk=usuario.pk).update(is_active=False)
+                antes = (s.eventos.count(), s.decisiones.count(), s.evaluaciones.count())
+                self.assertRedirects(
+                    self.client.get(reverse("solicitud_detalle", args=[s.pk])),
+                    reverse("login") + "?next=" + reverse("solicitud_detalle", args=[s.pk]),
+                    fetch_redirect_response=False,
+                )
+                respuesta = self.client.post(
+                    reverse("cambiar_estado", args=[s.pk]),
+                    {"accion": "rechazar", "comentario": "Cuenta desactivada."},
+                )
+                self.assertEqual(respuesta.status_code, 302)
+                self.assertTrue(respuesta.url.startswith(reverse("login") + "?next="))
+                self.assertFalse(self.client.login(username=usuario.username, password="ClaveDePrueba123!"))
+                self.assertEqual(antes, (s.eventos.count(), s.decisiones.count(), s.evaluaciones.count()))
+                User.objects.filter(pk=usuario.pk).update(is_active=True)
+
+    def test_desactivar_bloquea_fachada_aun_con_actor_previamente_cargado(self):
+        """No basta el is_active obsoleto de un objeto ya cargado en memoria."""
+        s = self.crear()
+        Documento.objects.create(solicitud=s, nombre="Constancia", archivo="prueba.pdf", cargado_por=self.aspirante)
+        casos = [
+            (self.otro, "borrador", lambda: ExpedienteFacade.crear(self.otro, self.convocatoria, Decimal("5000"), "Motivación de una cuenta ya desactivada.")),
+            (self.aspirante, "borrador", lambda: ExpedienteFacade.editar(self.aspirante, s.pk, Decimal("5000"), "Cambio de una cuenta ya desactivada.")),
+            (self.aspirante, "borrador", lambda: ExpedienteFacade.adjuntar(self.aspirante, s.pk, "Constancia", SimpleUploadedFile("prueba.pdf", b"%PDF-1.4\nprueba"))),
+            (self.aspirante, "borrador", lambda: ExpedienteFacade.transicionar(self.aspirante, s.pk, "enviar")),
+            (self.evaluador, "pendiente", lambda: ExpedienteFacade.transicionar(self.evaluador, s.pk, "revisar", "Inicio de revisión.")),
+            (self.evaluador, "revision", lambda: ExpedienteFacade.evaluar(self.evaluador, s.pk, 90, "Evaluación de cuenta desactivada.")),
+            (self.aprobador, "revision", lambda: ExpedienteFacade.transicionar(self.aprobador, s.pk, "rechazar", "Decisión de cuenta desactivada.")),
+        ]
+        with tempfile.TemporaryDirectory() as directorio, override_settings(MEDIA_ROOT=directorio):
+            for indice, (actor, estado, operar) in enumerate(casos):
+                with self.subTest(rol=actor.perfil.rol, estado=estado, operacion=indice):
+                    Solicitud.objects.filter(pk=s.pk).update(estado=estado)
+                    User.objects.filter(pk=actor.pk).update(is_active=False)
+                    self.assertTrue(actor.is_active)  # El objeto del llamador todavía está desactualizado.
+                    self.assertFalse(puede_ver(actor, s))
+                    self.assertFalse(visibles(actor).exists())
+                    antes = (Solicitud.objects.count(), s.documentos.count(), s.eventos.count(), s.decisiones.count(), s.evaluaciones.count(), Notificacion.objects.count())
+                    with self.assertRaises(PermissionDenied):
+                        operar()
+                    self.assertEqual(antes, (Solicitud.objects.count(), s.documentos.count(), s.eventos.count(), s.decisiones.count(), s.evaluaciones.count(), Notificacion.objects.count()))
+                    s.refresh_from_db()
+                    self.assertEqual(s.estado, estado)
+                    User.objects.filter(pk=actor.pk).update(is_active=True)
+
+    def test_evaluador_sin_comite_no_consulta_descarga_ni_actua_por_http(self):
+        # Ser miembro de otro comité no autoriza esta convocatoria.
+        otra = Convocatoria.objects.create(
+            titulo="Otra convocatoria", descripcion="Prueba de alcance",
+            requisitos="Constancia", nivel=self.convocatoria.nivel,
+            apertura=self.convocatoria.apertura, cierre=self.convocatoria.cierre,
+            monto_maximo=self.convocatoria.monto_maximo, publicada=True,
+        )
+        otro_comite = Comite.objects.create(nombre="Otro comité", convocatoria=otra)
+        otro_comite.miembros.add(self.no_asignado)
+        s = self.en_revision()
+        doc = s.documentos.get()
+        self.client.force_login(self.no_asignado)
+        for ruta, pk in (("solicitud_detalle", s.pk), ("descargar_documento", doc.pk)):
+            self.assertEqual(self.client.get(reverse(ruta, args=[pk])).status_code, 403)
+        antes = (s.eventos.count(), s.evaluaciones.count(), s.decisiones.count())
+        for ruta, datos in (
+            ("evaluar", {"puntaje": 99, "observaciones": "Evaluador sin comité asignado."}),
+            ("cambiar_estado", {"accion": "corregir", "comentario": "Sin comité asignado."}),
+        ):
+            self.assertEqual(self.client.post(reverse(ruta, args=[s.pk]), datos).status_code, 403)
+        self.assertEqual(antes, (s.eventos.count(), s.evaluaciones.count(), s.decisiones.count()))
+        self.assertNotContains(self.client.get(reverse("solicitudes_list")), reverse("solicitud_detalle", args=[s.pk]))
+
+    def test_estados_no_editables_rechazan_adjuntar_editar_y_reenviar(self):
+        s = self.crear()
+        Documento.objects.create(solicitud=s, nombre="Constancia", archivo="prueba.pdf", cargado_por=self.aspirante)
+        self.client.force_login(self.aspirante)
+        with tempfile.TemporaryDirectory() as directorio, override_settings(MEDIA_ROOT=directorio):
+            for estado in ("pendiente", "revision", "segunda_aprobacion", "aprobada", "rechazada", "activa", "completada"):
+                with self.subTest(estado=estado):
+                    Solicitud.objects.filter(pk=s.pk).update(estado=estado)
+                    antes = (s.documentos.count(), s.eventos.count(), Notificacion.objects.count())
+                    self.client.post(reverse("editar_solicitud", args=[s.pk]), {"monto": "5000", "motivacion": "Una motivación distinta para el expediente."})
+                    self.client.post(reverse("adjuntar", args=[s.pk]), {"nombre": "Nuevo", "archivo": SimpleUploadedFile("nuevo.pdf", b"%PDF-1.4\nprueba")})
+                    self.client.post(reverse("cambiar_estado", args=[s.pk]), {"accion": "enviar"})
+                    s.refresh_from_db()
+                    self.assertEqual(s.estado, estado)
+                    self.assertEqual(s.monto, Decimal("12000"))
+                    self.assertEqual(antes, (s.documentos.count(), s.eventos.count(), Notificacion.objects.count()))
