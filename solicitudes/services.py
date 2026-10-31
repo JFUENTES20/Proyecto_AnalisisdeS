@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Q
-from usuarios.permisos import rol_de
+from usuarios.permisos import cuenta_activa, rol_de
 from evaluaciones.models import Evaluacion
 from .models import Solicitud, Decision, Documento
 from .patterns import ESTADOS, EventoSolicitud, GestorObservadores
@@ -13,6 +13,8 @@ UMBRAL_SEGUNDA_APROBACION = Decimal("10000.00")
 
 
 def puede_ver(usuario, solicitud):
+    if not cuenta_activa(usuario):
+        return False
     rol = rol_de(usuario)
     return (
         solicitud.aspirante_id == usuario.pk
@@ -29,6 +31,8 @@ def puede_ver(usuario, solicitud):
 
 def visibles(usuario):
     qs = Solicitud.objects.select_related("convocatoria", "aspirante")
+    if not cuenta_activa(usuario):
+        return qs.none()
     rol = rol_de(usuario)
     if rol in {"administrador", "aprobador"}:
         return qs
@@ -84,7 +88,7 @@ class ExpedienteFacade:
         anterior = solicitud.estado
         siguiente = ESTADOS[anterior].siguiente(accion)
         if accion == "enviar":
-            if solicitud.aspirante_id != actor.pk:
+            if not cuenta_activa(actor) or solicitud.aspirante_id != actor.pk:
                 raise PermissionDenied
             if not solicitud.convocatoria or not solicitud.convocatoria.abierta:
                 raise ValidationError("La convocatoria está cerrada.")
@@ -157,7 +161,7 @@ class ExpedienteFacade:
     @transaction.atomic
     def adjuntar(actor, solicitud_id, nombre, archivo):
         solicitud = Solicitud.objects.select_for_update().get(pk=solicitud_id)
-        if solicitud.aspirante_id != actor.pk:
+        if not cuenta_activa(actor) or solicitud.aspirante_id != actor.pk:
             raise PermissionDenied
         if solicitud.estado not in {"borrador", "correcciones"}:
             raise ValidationError(
@@ -178,7 +182,7 @@ class ExpedienteFacade:
             .select_related("convocatoria")
             .get(pk=solicitud_id)
         )
-        if solicitud.aspirante_id != actor.pk:
+        if not cuenta_activa(actor) or solicitud.aspirante_id != actor.pk:
             raise PermissionDenied
         if solicitud.estado not in {"borrador", "correcciones"}:
             raise ValidationError(
